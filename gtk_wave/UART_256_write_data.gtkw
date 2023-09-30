@@ -1,0 +1,38 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Sat Sep 30 05:37:40 2023
+[*]
+[dumpfile] "D:\Efinity\project\test_two_project_write\Efinity\la0_waveform.vcd"
+[dumpfile_mtime] "Sat Sep 30 05:14:12 2023"
+[dumpfile_size] 7564
+[savefile] "D:\Efinity\project\test_two_project_write\Efinity\UART_256_write_data.gtkw"
+[timestart] 435
+[size] 1536 793
+[pos] -113 -113
+*-5.000000 1023 512 1536 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 197
+[signals_width] 280
+[sst_expanded] 1
+[sst_vpaned_height] 221
+@22
+top.trig
+top.s_out[255:0]
+top.s_out[255:0]
+@28
+top.trig
+top.u_1/cnt
+top.u_1/e_flag
+@22
+top.u_1/m_1/mem_reg[31:0]
+top.u_1/m_1/mem_reg[1:1]
+top.u_1/m_1/mem_reg[2:2]
+top.u_1/m_1/mem_reg[3:3]
+top.u_1/m_1/mem_reg[4:4]
+top.u_1/m_1/mem_reg[5:5]
+top.u_1/m_1/mem_reg[6:6]
+top.u_1/m_1/mem_reg[7:7]
+top.u_1/o_data4[31:0]
+@28
+top.u_1/read_en
+[pattern_trace] 1
+[pattern_trace] 0
