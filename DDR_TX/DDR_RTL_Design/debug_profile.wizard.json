@@ -1,0 +1,1479 @@
+{
+    "debug_cores": [
+        {
+            "name": "la0",
+            "type": "la",
+            "uuid": "2abda11993714dfaa512372b80d6990b",
+            "trigin_en": false,
+            "trigout_en": false,
+            "auto_inserted": true,
+            "capture_control": false,
+            "data_depth": 1024,
+            "input_pipeline": 1,
+            "probes": [
+                {
+                    "name": "test_reg",
+                    "width": 256,
+                    "probe_type": 2
+                },
+                {
+                    "name": "trig",
+                    "width": 1,
+                    "probe_type": 1
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "command": "add_ports",
+            "id": 1,
+            "args": {
+                "netlist": "Test_two_design",
+                "ports": [
+                    {
+                        "name": "jtag_inst1_CAPTURE",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst1_DRCK",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst1_RESET",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst1_RUNTEST",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst1_SEL",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst1_SHIFT",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst1_TCK",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst1_TDI",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst1_TMS",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst1_UPDATE",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst1_TDO",
+                        "dir": "out",
+                        "width": 1
+                    }
+                ]
+            }
+        },
+        {
+            "command": "instantiate",
+            "netlist": "edb_top",
+            "id": 2,
+            "instance": "edb_top_inst"
+        },
+        {
+            "command": "connect",
+            "id": 3,
+            "args": {
+                "instance": "edb_top_inst",
+                "ports": [
+                    {
+                        "name": "bscan_CAPTURE",
+                        "net": "jtag_inst1_CAPTURE"
+                    },
+                    {
+                        "name": "bscan_DRCK",
+                        "net": "jtag_inst1_DRCK"
+                    },
+                    {
+                        "name": "bscan_RESET",
+                        "net": "jtag_inst1_RESET"
+                    },
+                    {
+                        "name": "bscan_RUNTEST",
+                        "net": "jtag_inst1_RUNTEST"
+                    },
+                    {
+                        "name": "bscan_SEL",
+                        "net": "jtag_inst1_SEL"
+                    },
+                    {
+                        "name": "bscan_SHIFT",
+                        "net": "jtag_inst1_SHIFT"
+                    },
+                    {
+                        "name": "bscan_TCK",
+                        "net": "jtag_inst1_TCK"
+                    },
+                    {
+                        "name": "bscan_TDI",
+                        "net": "jtag_inst1_TDI"
+                    },
+                    {
+                        "name": "bscan_TMS",
+                        "net": "jtag_inst1_TMS"
+                    },
+                    {
+                        "name": "bscan_UPDATE",
+                        "net": "jtag_inst1_UPDATE"
+                    },
+                    {
+                        "name": "bscan_TDO",
+                        "net": "jtag_inst1_TDO"
+                    },
+                    {
+                        "name": "la0_clk",
+                        "net": "axi_clk",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[0]",
+                        "net": "test_reg[0]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[1]",
+                        "net": "test_reg[1]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[2]",
+                        "net": "test_reg[2]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[3]",
+                        "net": "test_reg[3]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[4]",
+                        "net": "test_reg[4]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[5]",
+                        "net": "test_reg[5]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[6]",
+                        "net": "test_reg[6]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[7]",
+                        "net": "test_reg[7]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[8]",
+                        "net": "test_reg[8]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[9]",
+                        "net": "test_reg[9]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[10]",
+                        "net": "test_reg[10]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[11]",
+                        "net": "test_reg[11]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[12]",
+                        "net": "test_reg[12]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[13]",
+                        "net": "test_reg[13]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[14]",
+                        "net": "test_reg[14]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[15]",
+                        "net": "test_reg[15]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[16]",
+                        "net": "test_reg[16]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[17]",
+                        "net": "test_reg[17]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[18]",
+                        "net": "test_reg[18]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[19]",
+                        "net": "test_reg[19]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[20]",
+                        "net": "test_reg[20]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[21]",
+                        "net": "test_reg[21]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[22]",
+                        "net": "test_reg[22]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[23]",
+                        "net": "test_reg[23]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[24]",
+                        "net": "test_reg[24]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[25]",
+                        "net": "test_reg[25]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[26]",
+                        "net": "test_reg[26]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[27]",
+                        "net": "test_reg[27]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[28]",
+                        "net": "test_reg[28]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[29]",
+                        "net": "test_reg[29]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[30]",
+                        "net": "test_reg[30]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[31]",
+                        "net": "test_reg[31]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[32]",
+                        "net": "test_reg[32]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[33]",
+                        "net": "test_reg[33]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[34]",
+                        "net": "test_reg[34]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[35]",
+                        "net": "test_reg[35]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[36]",
+                        "net": "test_reg[36]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[37]",
+                        "net": "test_reg[37]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[38]",
+                        "net": "test_reg[38]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[39]",
+                        "net": "test_reg[39]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[40]",
+                        "net": "test_reg[40]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[41]",
+                        "net": "test_reg[41]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[42]",
+                        "net": "test_reg[42]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[43]",
+                        "net": "test_reg[43]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[44]",
+                        "net": "test_reg[44]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[45]",
+                        "net": "test_reg[45]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[46]",
+                        "net": "test_reg[46]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[47]",
+                        "net": "test_reg[47]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[48]",
+                        "net": "test_reg[48]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[49]",
+                        "net": "test_reg[49]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[50]",
+                        "net": "test_reg[50]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[51]",
+                        "net": "test_reg[51]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[52]",
+                        "net": "test_reg[52]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[53]",
+                        "net": "test_reg[53]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[54]",
+                        "net": "test_reg[54]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[55]",
+                        "net": "test_reg[55]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[56]",
+                        "net": "test_reg[56]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[57]",
+                        "net": "test_reg[57]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[58]",
+                        "net": "test_reg[58]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[59]",
+                        "net": "test_reg[59]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[60]",
+                        "net": "test_reg[60]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[61]",
+                        "net": "test_reg[61]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[62]",
+                        "net": "test_reg[62]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[63]",
+                        "net": "test_reg[63]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[64]",
+                        "net": "test_reg[64]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[65]",
+                        "net": "test_reg[65]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[66]",
+                        "net": "test_reg[66]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[67]",
+                        "net": "test_reg[67]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[68]",
+                        "net": "test_reg[68]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[69]",
+                        "net": "test_reg[69]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[70]",
+                        "net": "test_reg[70]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[71]",
+                        "net": "test_reg[71]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[72]",
+                        "net": "test_reg[72]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[73]",
+                        "net": "test_reg[73]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[74]",
+                        "net": "test_reg[74]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[75]",
+                        "net": "test_reg[75]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[76]",
+                        "net": "test_reg[76]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[77]",
+                        "net": "test_reg[77]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[78]",
+                        "net": "test_reg[78]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[79]",
+                        "net": "test_reg[79]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[80]",
+                        "net": "test_reg[80]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[81]",
+                        "net": "test_reg[81]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[82]",
+                        "net": "test_reg[82]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[83]",
+                        "net": "test_reg[83]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[84]",
+                        "net": "test_reg[84]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[85]",
+                        "net": "test_reg[85]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[86]",
+                        "net": "test_reg[86]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[87]",
+                        "net": "test_reg[87]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[88]",
+                        "net": "test_reg[88]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[89]",
+                        "net": "test_reg[89]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[90]",
+                        "net": "test_reg[90]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[91]",
+                        "net": "test_reg[91]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[92]",
+                        "net": "test_reg[92]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[93]",
+                        "net": "test_reg[93]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[94]",
+                        "net": "test_reg[94]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[95]",
+                        "net": "test_reg[95]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[96]",
+                        "net": "test_reg[96]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[97]",
+                        "net": "test_reg[97]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[98]",
+                        "net": "test_reg[98]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[99]",
+                        "net": "test_reg[99]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[100]",
+                        "net": "test_reg[100]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[101]",
+                        "net": "test_reg[101]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[102]",
+                        "net": "test_reg[102]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[103]",
+                        "net": "test_reg[103]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[104]",
+                        "net": "test_reg[104]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[105]",
+                        "net": "test_reg[105]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[106]",
+                        "net": "test_reg[106]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[107]",
+                        "net": "test_reg[107]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[108]",
+                        "net": "test_reg[108]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[109]",
+                        "net": "test_reg[109]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[110]",
+                        "net": "test_reg[110]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[111]",
+                        "net": "test_reg[111]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[112]",
+                        "net": "test_reg[112]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[113]",
+                        "net": "test_reg[113]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[114]",
+                        "net": "test_reg[114]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[115]",
+                        "net": "test_reg[115]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[116]",
+                        "net": "test_reg[116]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[117]",
+                        "net": "test_reg[117]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[118]",
+                        "net": "test_reg[118]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[119]",
+                        "net": "test_reg[119]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[120]",
+                        "net": "test_reg[120]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[121]",
+                        "net": "test_reg[121]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[122]",
+                        "net": "test_reg[122]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[123]",
+                        "net": "test_reg[123]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[124]",
+                        "net": "test_reg[124]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[125]",
+                        "net": "test_reg[125]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[126]",
+                        "net": "test_reg[126]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[127]",
+                        "net": "test_reg[127]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[128]",
+                        "net": "test_reg[128]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[129]",
+                        "net": "test_reg[129]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[130]",
+                        "net": "test_reg[130]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[131]",
+                        "net": "test_reg[131]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[132]",
+                        "net": "test_reg[132]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[133]",
+                        "net": "test_reg[133]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[134]",
+                        "net": "test_reg[134]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[135]",
+                        "net": "test_reg[135]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[136]",
+                        "net": "test_reg[136]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[137]",
+                        "net": "test_reg[137]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[138]",
+                        "net": "test_reg[138]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[139]",
+                        "net": "test_reg[139]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[140]",
+                        "net": "test_reg[140]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[141]",
+                        "net": "test_reg[141]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[142]",
+                        "net": "test_reg[142]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[143]",
+                        "net": "test_reg[143]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[144]",
+                        "net": "test_reg[144]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[145]",
+                        "net": "test_reg[145]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[146]",
+                        "net": "test_reg[146]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[147]",
+                        "net": "test_reg[147]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[148]",
+                        "net": "test_reg[148]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[149]",
+                        "net": "test_reg[149]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[150]",
+                        "net": "test_reg[150]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[151]",
+                        "net": "test_reg[151]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[152]",
+                        "net": "test_reg[152]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[153]",
+                        "net": "test_reg[153]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[154]",
+                        "net": "test_reg[154]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[155]",
+                        "net": "test_reg[155]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[156]",
+                        "net": "test_reg[156]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[157]",
+                        "net": "test_reg[157]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[158]",
+                        "net": "test_reg[158]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[159]",
+                        "net": "test_reg[159]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[160]",
+                        "net": "test_reg[160]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[161]",
+                        "net": "test_reg[161]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[162]",
+                        "net": "test_reg[162]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[163]",
+                        "net": "test_reg[163]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[164]",
+                        "net": "test_reg[164]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[165]",
+                        "net": "test_reg[165]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[166]",
+                        "net": "test_reg[166]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[167]",
+                        "net": "test_reg[167]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[168]",
+                        "net": "test_reg[168]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[169]",
+                        "net": "test_reg[169]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[170]",
+                        "net": "test_reg[170]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[171]",
+                        "net": "test_reg[171]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[172]",
+                        "net": "test_reg[172]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[173]",
+                        "net": "test_reg[173]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[174]",
+                        "net": "test_reg[174]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[175]",
+                        "net": "test_reg[175]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[176]",
+                        "net": "test_reg[176]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[177]",
+                        "net": "test_reg[177]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[178]",
+                        "net": "test_reg[178]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[179]",
+                        "net": "test_reg[179]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[180]",
+                        "net": "test_reg[180]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[181]",
+                        "net": "test_reg[181]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[182]",
+                        "net": "test_reg[182]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[183]",
+                        "net": "test_reg[183]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[184]",
+                        "net": "test_reg[184]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[185]",
+                        "net": "test_reg[185]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[186]",
+                        "net": "test_reg[186]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[187]",
+                        "net": "test_reg[187]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[188]",
+                        "net": "test_reg[188]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[189]",
+                        "net": "test_reg[189]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[190]",
+                        "net": "test_reg[190]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[191]",
+                        "net": "test_reg[191]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[192]",
+                        "net": "test_reg[192]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[193]",
+                        "net": "test_reg[193]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[194]",
+                        "net": "test_reg[194]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[195]",
+                        "net": "test_reg[195]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[196]",
+                        "net": "test_reg[196]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[197]",
+                        "net": "test_reg[197]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[198]",
+                        "net": "test_reg[198]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[199]",
+                        "net": "test_reg[199]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[200]",
+                        "net": "test_reg[200]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[201]",
+                        "net": "test_reg[201]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[202]",
+                        "net": "test_reg[202]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[203]",
+                        "net": "test_reg[203]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[204]",
+                        "net": "test_reg[204]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[205]",
+                        "net": "test_reg[205]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[206]",
+                        "net": "test_reg[206]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[207]",
+                        "net": "test_reg[207]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[208]",
+                        "net": "test_reg[208]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[209]",
+                        "net": "test_reg[209]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[210]",
+                        "net": "test_reg[210]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[211]",
+                        "net": "test_reg[211]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[212]",
+                        "net": "test_reg[212]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[213]",
+                        "net": "test_reg[213]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[214]",
+                        "net": "test_reg[214]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[215]",
+                        "net": "test_reg[215]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[216]",
+                        "net": "test_reg[216]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[217]",
+                        "net": "test_reg[217]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[218]",
+                        "net": "test_reg[218]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[219]",
+                        "net": "test_reg[219]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[220]",
+                        "net": "test_reg[220]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[221]",
+                        "net": "test_reg[221]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[222]",
+                        "net": "test_reg[222]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[223]",
+                        "net": "test_reg[223]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[224]",
+                        "net": "test_reg[224]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[225]",
+                        "net": "test_reg[225]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[226]",
+                        "net": "test_reg[226]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[227]",
+                        "net": "test_reg[227]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[228]",
+                        "net": "test_reg[228]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[229]",
+                        "net": "test_reg[229]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[230]",
+                        "net": "test_reg[230]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[231]",
+                        "net": "test_reg[231]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[232]",
+                        "net": "test_reg[232]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[233]",
+                        "net": "test_reg[233]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[234]",
+                        "net": "test_reg[234]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[235]",
+                        "net": "test_reg[235]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[236]",
+                        "net": "test_reg[236]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[237]",
+                        "net": "test_reg[237]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[238]",
+                        "net": "test_reg[238]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[239]",
+                        "net": "test_reg[239]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[240]",
+                        "net": "test_reg[240]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[241]",
+                        "net": "test_reg[241]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[242]",
+                        "net": "test_reg[242]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[243]",
+                        "net": "test_reg[243]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[244]",
+                        "net": "test_reg[244]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[245]",
+                        "net": "test_reg[245]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[246]",
+                        "net": "test_reg[246]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[247]",
+                        "net": "test_reg[247]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[248]",
+                        "net": "test_reg[248]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[249]",
+                        "net": "test_reg[249]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[250]",
+                        "net": "test_reg[250]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[251]",
+                        "net": "test_reg[251]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[252]",
+                        "net": "test_reg[252]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[253]",
+                        "net": "test_reg[253]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[254]",
+                        "net": "test_reg[254]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0[255]",
+                        "net": "test_reg[255]",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe1",
+                        "net": "trig",
+                        "path": []
+                    }
+                ]
+            }
+        }
+    ],
+    "vdbs": [
+        {
+            "file": "debug_top.post.vdb",
+            "instance": "edb_top_inst"
+        }
+    ],
+    "session": {
+        "wizard": {
+            "data_depth": 1024,
+            "capture_control": false,
+            "selected_nets": [
+                {
+                    "name": "test_reg",
+                    "width": 256,
+                    "clk_domain": "axi_clk",
+                    "selected_probe_type": "DATA ONLY",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 255,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "trig",
+                    "width": 1,
+                    "clk_domain": "axi_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                }
+            ],
+            "top_module": "Test_two_design",
+            "db_checksum": "ba5fce12098a2c03e7bae2e9a172d1842464edfca8e284870b3519e987537970",
+            "src": "elaborate",
+            "jtag_user": "USER1",
+            "input_pipeline": 1
+        }
+    }
+}
