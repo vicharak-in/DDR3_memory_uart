@@ -87,7 +87,6 @@ Note : DDR3 Phy supports maximun 533.33MHz.
 | Address mapping        | BA - Row - Col               | BA - Row - Col               |
 | Latency (Read)         | 16 to 17 cycles              | 15 cycles                    |
 | read data clock cycle        | 12 cycles (per burst)        | 23 to 25 cycles (per burst)              |
-|
 
 ## Key findings
  - When DDR3 is operated at 533.33 MHz, number of read cycles in the burst poperation is decreased as compare to 400MHz clock cycle.
