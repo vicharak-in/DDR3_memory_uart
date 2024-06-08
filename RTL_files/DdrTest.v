@@ -1,21 +1,9 @@
 `timescale 100ps/10ps
-
 ////////////////// DdrTest /////////////////////////////
-/**********************************************************
-  Function Description: 
-
-  Establishment : Richard Zhu 
-  Create date   : 2020-01-09 
-  Versions      : V0.1 
-  Revision of records: 
-  Ver0.1
-  
-**********************************************************/
-
 module DdrTest
 # (
   parameter   AXI_DATA_WIDTH    = 256             ,
-	parameter   DDR_START_ADDRESS = 32'h00_00_10_00 ,  //DDR Memory Start Address
+	parameter   DDR_START_ADDRESS = 32'h00_00_00_00 ,  //DDR Memory Start Address
 	parameter   DDR_END_ADDRESS   = 32'h0f_ff_ff_ff ,  //DDR Memory End Address
   parameter   DDR_WRITE_FIRST   = 1'h0            ,   //1:Write First ; 0: Read First
   parameter   RIGHT_CNT_WIDTH   = 27              ,      
@@ -25,9 +13,14 @@ module DdrTest
 ( 
   //System Signal
   input               SysClk      , //(O)System Clock
-  input               Reset_N     , //(I)System Reset (Low Active)
- // input   [  255 : 0] RamWrData   ,
-  
+  input               Reset_N     , //(I)System Reset (Low Active) 
+   // output        r_n,
+  output [3:0]        add_rd_inc,
+  output  [3:0]       add_inc,
+  output reg          WrBurstEn ,
+  output reg          RdBurstEn ,  
+  output   [255:0]     RamWrDOut ,
+  output   [255:0]     RamWrData ,
   //Test Configuration & State
   input   [      1:0] CfgTestMode , //(I)Test Mode: 1:Read Only;2:Write Only;3:Write/Read alternate
   input   [      7:0] CfgBurstLen , //(I)Config Burst Length;
@@ -36,10 +29,19 @@ module DdrTest
   input   [     31:0] CfgTestLen  , //(I)Config Test Length
   input   [      1:0] CfgDataMode , //Config Test Data Mode 0: Nomarl 1:Reverse
   input               TestStart   , //(I)Test Start Control
+  
   //Test State  & Result      
   output              TestBusy    , //(O)Test Busy State  
   output              TestErr     , //(O)Test Data Error
   output              TestRight   , //(O)Test Data Right
+  output    wire      RamRdEnd    , 
+  output    reg       TestRdBusy  ,
+ // input    [31:0]     StartAddr   ,
+  output  reg [31:0]  NextWrAddrCnt ,
+  output  reg [31:0]  NextRdAddrCnt ,
+  output  reg [31:0]  TestWrStartAddr ,
+  output     reg      TestDdrWrEnd ,
+  
   //AXI4 Operate                  
   output              AxiWrEn     , //Axi4 Write Enable
   output  [     31:0] AxiWrStartA , //Axi4 Write Start Address
@@ -99,8 +101,6 @@ module DdrTest
   
 //1111111111111111111111111111111111111111111111111111111
 //	Process Configuration 
-//	Input：
-//	output：
 //***************************************************/ 
   
   /////////////////////////////////////////////////////////
@@ -120,11 +120,11 @@ module DdrTest
   reg   [31:0]  CalcEndAddr   ; //Calculate End Address for DDR Test        
   reg   [ 7:0]  CalcBurstLen  ; //Calculate Burst Length for Axi4 Bus
   
-  always @( posedge SysClk)  CalcStartAddr  <= # TCo_C (CfgStartAddr  > 32'h00_00_10_00 ) ?
-                                                        CfgStartAddr  : 32'h00_00_10_00   ;
+  always @( posedge SysClk)  CalcStartAddr  <= # TCo_C (CfgStartAddr  > DDR_START_ADDRESS ) ?
+                                                        CfgStartAddr  : DDR_START_ADDRESS   ;
                                                         
-  always @( posedge SysClk)  CalcEndAddr    <= # TCo_C (CfgEndAddr    < 32'h00_00_10_00   ) ?
-                                                        CfgEndAddr    : 32'h00_00_10_00     ;
+  always @( posedge SysClk)  CalcEndAddr    <= # TCo_C (CfgEndAddr    < DDR_END_ADDRESS   ) ?
+                                                        CfgEndAddr    : DDR_END_ADDRESS     ;
                                                         
   always @( posedge SysClk)  CalcBurstLen   <= # TCo_C (CfgBurstLen   < AXI_MAX_BURST     ) ?
                                                         CfgBurstLen   : AXI_MAX_BURST       ;
@@ -139,30 +139,23 @@ module DdrTest
                                                   
   reg   [12:0]  TestBurstLen  = 13'h0             ;
   
-  always @( posedge SysClk)  begin 
-  if (TestConfInEn)
+  always @( posedge SysClk)   if (TestConfInEn)
   begin
     TestMode      <= # TCo_C    CfgTestMode   ;
     BurstLen      <= # TCo_C    CalcBurstLen  ;
     TestLen       <= # TCo_C    (|CfgTestLen) ? CfgTestLen :  {32{1'h1}};
     
     StartAddr     <= # TCo_C  { CalcStartAddr[31:8]  , 8'h 0  } ;
-    EndAddr       <= # TCo_C  { CalcEndAddr  [31:8]  , 8'h 0} ;
+    EndAddr       <= # TCo_C  { CalcEndAddr  [31:8]  , 8'hff  } ;
     TestBurstLen  <= # TCo_C  (CalcBurstLen + 8'h1) << AXI_DATA_SIZE;
   end
-  end
-  
-//1111111111111111111111111111111111111111111111111111111
-
 
 //2222222222222222222222222222222222222222222222222222222
 //	Write Address
-//	Input：
-//	output：
 //***************************************************/ 
   
   /////////////////////////////////////////////////////////
-  reg         WrBurstEn;
+ // reg         WrBurstEn;
   reg [31:0]  WrBurstCnt  = 32'h0;
   
   always @( posedge SysClk or negedge Reset_N)  
@@ -170,8 +163,7 @@ module DdrTest
     if (~Reset_N)           WrBurstCnt <= # TCo_C 32'h0   ;  
     else if (TestStopEn)    WrBurstCnt <= # TCo_C 32'h0   ;
     else if (TestStartEn)   WrBurstCnt <= # TCo_C TestLen ;
-  //  else if (WrBurstEn )    WrBurstCnt <= # TCo_C WrBurstCnt - {31'h0,{|WrBurstCnt}};
-    else if (WrBurstEn )    WrBurstCnt <= # TCo_C WrBurstCnt ;
+    else if (WrBurstEn )    WrBurstCnt <= # TCo_C WrBurstCnt - {31'h0,{|WrBurstCnt}};
   end
   
   /////////////////////////////////////////////////////////
@@ -189,27 +181,94 @@ module DdrTest
   end
   
   /////////////////////////////////////////////////////////
-  reg [31:0]  NextWrAddrCnt   = 32'h0;
-  reg         TestDdrWrEnd    =  1'h0;
+  //reg         TestDdrWrEnd    =  1'h0;
   reg         WrAxiCross4K    =  1'h0;
+  reg  [31:0]  NextWrAddrCnt = 0;
+  reg [31:0]  mem [15:0] ;
+  reg [3:0]  add_rd_inc ;
+  reg [3:0]  add_inc ; 
 
-  always @( posedge SysClk)  
+//////////////////////////////////////////////////////////////////////////////////////////// 
+//// 1st test for generating random address /////
+///////// this is use for sending the random address using the .mem file //////////////// 
+//// ///////////////////////////////////////////////////////////////////////////////////
+
+initial begin 
+    
+    $readmemh("/home/prapti/Efinity_Project/ddr3_test_custom_data/Add.mem",mem );  // .mem file path (sending adderess in hexadecimal)
+end
+   
+always @(posedge SysClk) 
+begin
+    if(TestStartEn) begin                                 
+        add_rd_inc <= 0 ;                                                 //counter - for counting the address in .mem file
+        NextWrAddrCnt <= # TCo_C mem[add_rd_inc]  ;                      // depend on the counter value select that address and store into NextWrAddrCnt. Here NextWrAddrCnt store the zeroth location address.
+    end
+    else if (WrBurstEn) 
+    begin 
+           if (TestDdrWrEnd)  begin 
+            add_rd_inc <= add_rd_inc + 1 ;                           // incremental counter                            
+            NextWrAddrCnt   <= # TCo_C mem[add_rd_inc+1]   ;         // whatever incremental counter value indecate the .mem file location for storing the next incremental address.
+           end 
+            else if (WrAxiCross4K) begin                             // check write axi 4k boundry  
+                NextWrAddrCnt   <= # TCo_C {(NextWrAddrCnt[31:12] + 20'h1),12'h0};    // if axi 4k boundry reach then append the 12'h0 in order to make the address alignment for next operation. 
+                add_rd_inc  <= add_rd_inc + 1;
+            end     
+                
+            else  begin          
+                NextWrAddrCnt   <= # TCo_C mem [add_rd_inc + 1]   ;  // tske the next address from .mem file
+                add_rd_inc  <= add_rd_inc + 1;                       //increment counter
+            end
+    end
+end
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2nd test for generating continuous address //
+//this always block is use for generating data using DdrData file module ///
+//it is generating data using the start address which is set using DDR_START_ADDRESS parameter ///
+// and after setting the start address it is increment the address according to burst length ///
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*  always @( posedge SysClk)  
   begin
-  //  if (TestStartEn)          NextWrAddrCnt   <= # TCo_C StartAddr      + {18'h0,TestBurstLen };
-    if (TestStartEn)          NextWrAddrCnt   <= # TCo_C StartAddr ;
+    if (TestStartEn)          NextWrAddrCnt   <= # TCo_C StartAddr      + {18'h0,TestBurstLen };  
     else if (WrBurstEn)  
     begin
-      if (TestDdrWrEnd)       NextWrAddrCnt   <= # TCo_C StartAddr   ;
-       else if (WrAxiCross4K)  NextWrAddrCnt   <= # TCo_C {(NextWrAddrCnt[31:12])};
-      else                    NextWrAddrCnt   <= # TCo_C NextWrAddrCnt ;
+      if (TestDdrWrEnd)       NextWrAddrCnt   <= # TCo_C StartAddr      + {18'h0,TestBurstLen };
+      else if (WrAxiCross4K)  NextWrAddrCnt   <= # TCo_C {(NextWrAddrCnt[31:12] + 20'h1),12'h0};
+      else                    NextWrAddrCnt   <= # TCo_C NextWrAddrCnt  + {18'h0,TestBurstLen };
     end
   end
+*/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// this logic is used for generating the random address using LFSR logic //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*  wire temp ;
+  reg [31:0] NextWrAddrCnt_reg = 32'h0131BC00;
+   assign temp = NextWrAddrCnt_reg [10] ^ NextWrAddrCnt_reg [15] ^ NextWrAddrCnt_reg [22]  ;
 
+  
+  always @(posedge SysClk) begin
+  
+    if (TestStartEn )
+            NextWrAddrCnt_reg  <= # TCo_C StartAddr  + 32'h00000200 ;
+    else if (WrBurstEn) begin 
+    
+        if (TestDdrWrEnd) 
+            NextWrAddrCnt_reg  <= # TCo_C {4'd0, NextWrAddrCnt_reg [26:0], temp } +32'h00000C00  ;   
+        else if (WrAxiCross4K) 
+            NextWrAddrCnt_reg  <= # TCo_C {(NextWrAddrCnt_reg [31:12] + 20'h1), 12'h0} ;
+        else
+            //NextWrAddrCnt <= (NextWrAddrCnt[4:0] == 5'd0) ? NextWrAddrCnt : {NextWrAddrCnt[31:5] , 5'h00} ;
+            NextWrAddrCnt_reg  <= # TCo_C {4'd0, NextWrAddrCnt_reg [26:0], temp } +32'h00000C00  ;                     
+  end
+end*/
+ 
+ //assign NextWrAddrCnt = (NextWrAddrCnt_reg[4:0] == 5'd0) ? NextWrAddrCnt_reg : {NextWrAddrCnt_reg[31:5] , 5'h00} ; // use it when LFSR logic is used
+  
   /////////////////////////////////////////////////////////
- // wire  [32:0]  WrAddrEndDiff   = {1'h0,EndAddr} - {1'h0,NextWrAddrCnt};  
-  wire  [32:0]  WrAddrEndDiff   = {1'h0,EndAddr} ;  
- // wire  [12:0]  WrAddr4KDiff    = 13'h1000 - {1'h0 , NextWrAddrCnt[11:0]} ; 
-  wire  [12:0]  WrAddr4KDiff    = 13'h1000 ; 
+  wire  [32:0]  WrAddrEndDiff   = {1'h0,EndAddr} - {1'h0,NextWrAddrCnt};  
+  wire  [12:0]  WrAddr4KDiff    = 13'h1000 - {1'h0 , NextWrAddrCnt[11:0]} ; 
   
   always @( posedge SysClk)  TestDdrWrEnd   <= # TCo_C ( WrAddrEndDiff < {1'h0,TestBurstLen} );
   always @( posedge SysClk)  WrAxiCross4K   <= # TCo_C ( WrAddr4KDiff  < {1'h0,TestBurstLen} ); 
@@ -231,19 +290,19 @@ module DdrTest
   end
   
   ///////////////////////////////////////////////////////// 
-  reg [31:0]  TestWrStartAddr = 32'h0;   
   
   always @( posedge SysClk)  
   begin
     if (TestStartEn)      TestWrStartAddr <= # TCo_C StartAddr ;
     else if (WrBurstEn)   TestWrStartAddr <= # TCo_C TestDdrWrEnd ? StartAddr : NextWrAddrCnt;
+    else TestWrStartAddr <= # TCo_C TestWrStartAddr ;
   end
   
   ///////////////////////////////////////////////////////// 
   //Operate Control & State
   wire   RamWrStart  = WrBurstEn ; //(I)[DdrWrCtrl]Ram Operate Start
   
-  wire  [ADW_C-1:0]  RamWrData   ; //(I)[DdrWrCtrl]Ram Write Data
+ // wire  [ADW_C-1:0]  RamWrData   ; //(I)[DdrWrCtrl]Ram Write Data
   wire               RamWrEnd    ; //(O)[DdrWrCtrl]Ram Operate End
   wire  [     31:0]  RamWrAddr   ; //(O)[DdrWrCtrl]Ram Write Address
   wire               RamWrNext   ; //(O)[DdrWrCtrl]Ram Write Next
@@ -293,6 +352,7 @@ module DdrTest
     .RamWrStart ( RamWrStart  ), //(I)Ram Operate Start
     .RamWrEnd   ( RamWrEnd    ), //(O)Ram Operate End
     .RamWrAddr  ( RamWrAddr   ), //(O)Ram Write Address
+   // .RamWrAddr  ( Add_start   ), //(O)Ram Write Address
     .RamWrNext  ( RamWrNext   ), //(O)[DdrWrCtrl]Ram Write Next
     .RamWrData  ( RamWrData   ), //(I)[DdrWrCtrl]Ram Write Data
     .RamWrBusy  ( RamWrBusy   ), //(O)Ram Write Busy
@@ -337,8 +397,9 @@ module DdrTest
     else if (WrDdrReturnEn)   WrDataMode  <= # TCo_C (~WrDataMode) ;
   end
   
-  ///////////////////////////////////////////////////////////// 
-  wire [ADW_C-1:0]  RamWrDOut;
+  /////////////////////////////////////////////////////////  
+ // wire [ADW_C-1:0]  RamWrDOut;
+
   
 	DdrWrDataGen  #(.AXI_DATA_WIDTH ( AXI_DATA_WIDTH ))
 	U1_DdrWrDataGen
@@ -346,12 +407,13 @@ module DdrTest
   	.SysClk     ( SysClk      ),  //System Clock
   	.WrStartEn  ( RamWrALoad  ),  //(I)[DdrWrDataGen]Write Start Enale
   	.WrAddrIn   ( RamWrAddr   ),  //(I)[DdrWrDataGen]Write Address Input 
-  	.WriteEn    ( RamWrNext   ) ,//(I)[DdrWrDataGen]Write Enable
+  	.WriteEn    ( RamWrNext   ),  //(I)[DdrWrDataGen]Write Enable
   	.DdrWrData  ( RamWrDOut   )   //(O)[DdrWrDataGen]DDR Write Data
   );
   
-   assign RamWrData = WrDataMode ? (~RamWrDOut) : RamWrDOut;
   
+  assign RamWrData = WrDataMode ? (~RamWrDOut) : RamWrDOut;
+
   /////////////////////////////////////////////////////////
   //AXI4 Operate 
   reg                 RamWrNextReg  ; //Axi4 Write Enable
@@ -361,7 +423,9 @@ module DdrTest
   
   always @( posedge SysClk)                 RamWrNextReg <= # TCo_C  RamWrNext       ; //Axi4 Write Enable   
   always @( posedge SysClk) if(RamWrNext)   RamWrAddrReg <= # TCo_C  RamWrAddr       ; //Axi4 Write Address
+ // always @( posedge SysClk) if(RamWrNext)   RamWrAddrReg <= # TCo_C  Add_start       ; //Axi4 Write Address
   always @( posedge SysClk) if(RamWrNext)   RamWrDataReg <= # TCo_C  RamWrData       ; //Axi4 Write Data
+  
   always @( posedge SysClk) if(RamWrALoad)  WrStartAReg  <= # TCo_C  TestWrStartAddr ; //Axi4 Write Start Address
   
   /////////////////////////////////////////////////////////
@@ -377,12 +441,12 @@ module DdrTest
 
 //3333333333333333333333333333333333333333333333333333333
 //	
-//	Input：
-//	output：
+//	Input��
+//	output��
 //***************************************************/ 
   
   /////////////////////////////////////////////////////////
-  reg         RdBurstEn   =  1'h0;
+  //reg         RdBurstEn   =  1'h0;
   reg [31:0]  RdBurstCnt  = 32'h0;
   
   always @( posedge SysClk or negedge Reset_N) 
@@ -394,7 +458,7 @@ module DdrTest
   end
   
   /////////////////////////////////////////////////////////
-  reg   TestRdBusy  = 1'h0;
+ // reg   TestRdBusy  = 1'h0;
   
   always @( posedge SysClk or negedge Reset_N) 
   begin
@@ -408,21 +472,87 @@ module DdrTest
   end
   
   /////////////////////////////////////////////////////////
-  reg [31:0]  NextRdAddrCnt   = 32'h0;
+  reg [31:0]  NextRdAddrCnt  ;
+  reg [31:0] mem_re[15:0] ;
   reg         TestDdrRdEnd    =  1'h0;
   reg         RdAxiCross4K    =  1'h0;
 
-  always @( posedge SysClk)  
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//This always block is used for reading random address using the .mem file
+//make sure address is in the axi formate in the .mem file 
+////////////////////////////////////////////////////////////////////////////////////////////////////   
+initial begin 
+    $readmemh("/home/prapti/Efinity_Project/ddr3_test_custom_data/Add.mem", mem_re);
+end
+        
+always @(posedge SysClk) begin
+    if(TestStartEn) begin 
+        NextRdAddrCnt <= # TCo_C mem_re[add_inc] ;
+        add_inc <= 0  ;
+    end 
+    
+    else if (RdBurstEn) 
+    begin 
+           if (RLAST & RVALID)  begin    // as one read request is completed then next address is taking from .mem file
+            add_inc <= add_inc + 1 ;  
+            NextRdAddrCnt   <= # TCo_C mem_re[add_inc+1] ;
+          end 
+            else if (RdAxiCross4K) begin      // checking axi 4k boundry 
+                NextRdAddrCnt   <= # TCo_C {(NextRdAddrCnt[31:12] + 20'h1),12'h0};   // if 4k boundry is reach then alinged the address for next operation.
+                add_inc  <= add_inc + 1 ;
+            end     
+                
+            else  begin          
+               // NextRdAddrCnt   <= # TCo_C NextRdAddrCnt  ;
+                NextRdAddrCnt   <= # TCo_C  mem_re[add_inc+1]  ;
+                add_inc  <= add_inc + 1 ;
+            end
+    end
+end
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2nd test for generating continuous read address //
+//this always block is use for generating data using DdrData file module ///
+//it is generating data using the start address which is set using DDR_START_ADDRESS parameter ///
+// and after setting the start address it is increment the address according to burst length ///
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* always @( posedge SysClk)  
   begin
-    if (TestStartEn)          NextRdAddrCnt   <= # TCo_C StartAddr      + {18'h0,TestBurstLen};
+   if (TestStartEn)          NextRdAddrCnt   <= # TCo_C StartAddr      + {18'h0,TestBurstLen};
     else if (RdBurstEn)  
     begin
       if (TestDdrRdEnd)       NextRdAddrCnt   <= # TCo_C StartAddr      + {18'h0,TestBurstLen};
       else if (RdAxiCross4K)  NextRdAddrCnt   <= # TCo_C {(NextRdAddrCnt[31:12] + 20'h1),12'h0};
       else                    NextRdAddrCnt   <= # TCo_C NextRdAddrCnt  + {18'h0,TestBurstLen};
     end
-  end
+end*/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// this logic is used for generating the random read address using LFSR logic //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ /* reg [31:0] NextRdAddrCnt_reg = 32'h0131BC00;
+  wire temp_rd ;
+  assign temp_rd = NextRdAddrCnt_reg [10] ^ NextRdAddrCnt_reg [15] ^ NextRdAddrCnt_reg [22]  ;
+  
+  always @(posedge SysClk) begin
+  
+    if (TestStartEn)
+            NextRdAddrCnt_reg <= # TCo_C StartAddr  + 32'h00000200;
+    else if (RdBurstEn) 
+    begin 
 
+        if (RLAST & RVALID) 
+            NextRdAddrCnt_reg <= # TCo_C{4'd0, NextRdAddrCnt_reg [26:0], temp_rd } + 32'h00000C00 ;  
+            
+            
+        else if (RdAxiCross4K) 
+            NextRdAddrCnt_reg <=# TCo_C {(NextRdAddrCnt_reg [31:12] + 20'h1), 12'h0} ;
+            
+        else 
+            NextRdAddrCnt_reg <= # TCo_C{4'd0, NextRdAddrCnt_reg [26:0], temp_rd } + 32'h00000C00 ;                     
+    end
+  end
+  assign NextRdAddrCnt  = (NextRdAddrCnt_reg[4:0]==5'd0) ? NextRdAddrCnt_reg : {NextRdAddrCnt_reg[31:5] , 5'h00} ;*/
+  //assign NextRdAddrCnt = lfsr_rd_reg ;   // LFSR read next address register 
+  
   /////////////////////////////////////////////////////////
   wire  [32:0]  RdAddrEndDiff   = {1'h0,EndAddr} - {1'h0,NextRdAddrCnt};  
   wire  [12:0]  RdAddr4KDiff    = 13'h1000 - {1'h0 , NextRdAddrCnt[11:0]} ; 
@@ -453,13 +583,14 @@ module DdrTest
   begin
     if (TestStartEn)        TestRdStartAddr <= # TCo_C StartAddr    ;
     else if (RdBurstEn)     TestRdStartAddr <= # TCo_C TestDdrRdEnd ? StartAddr : NextRdAddrCnt;
+    else TestRdStartAddr <= # TCo_C TestRdStartAddr    ;
   end
   
   /////////////////////////////////////////////////////////
   //Operate Control & State
   wire              RamRdStart  = RdBurstEn  ; //(I)[DdrRdCtrl]Ram Read Start
   
-  wire              RamRdEnd    ; //(O)[DdrRdCtrl]Ram Read End
+ // wire              RamRdEnd    ; //(O)[DdrRdCtrl]Ram Read End
   wire  [     31:0] RamRdAddr   ; //(O)[DdrRdCtrl]Ram Read Addrdss
   wire              RamRdDAva   ; //(O)[DdrRdCtrl]Ram Read Available
   wire  [ADW_C-1:0] RamRdData   ; //(O)[DdrRdCtrl]Ram Read Data
@@ -489,6 +620,9 @@ module DdrTest
   wire              RREADY      ; //(I)[RdData]Read ready. This signal indicates that the master can accept the read data and response information.
   wire [ADW_C-1:0]  RDATA       ; //(O)[RdData]Read data.
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//DDR Read Controller module //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   DdrRdCtrl
   # (
       .AXI_RD_ID      (AXI_RD_ID      ) ,
@@ -549,6 +683,9 @@ module DdrTest
   wire  [ADW_C-1:0] RamRdDIn    = RdDataMode ? (~RamRdData) : RamRdData;
   
   /////////////////////////////////////////////////////////  
+//  wire [3:0]  add_inc;
+ // wire        r_en   ;
+ // wire [31:0] Add_start_rd ;
   
   DdrRdDataChk 
   # (
@@ -564,6 +701,23 @@ module DdrTest
   	.DdrRdError ( TestErr   ),  //(O)[DdrRdDataChk]DDR Prbs Error         
   	.DdrRdRight ( TestRight )   //(O)[DdrRdDataChk]DDR Read Right           
   );
+  
+ /*add_rd_en
+ add_rd_en (
+    .clk (SysClk), 
+    .rst_rd (TestStart),
+    .rd_data_en (RamRdALoad),
+   // .rd (r_en),
+    .add_inc (add_inc)
+);*/
+
+/*Add_generate 
+Add_rd_inst(
+    .re (r_en),
+    .addr (add_inc),
+    .rdata_a (Add_start_rd ),
+    .clk (SysClk)
+);*/
   
   /////////////////////////////////////////////////////////
   //AXI4 Operate 
@@ -586,25 +740,14 @@ module DdrTest
   
   assign  AxiRdDMode  = RdDataMode    ; //Axi4 Read DDR End
   
-//3333333333333333333333333333333333333333333333333333333
-
-
-
-
-//4444444444444444444444444444444444444444444444444444444
-//	
-//	Input：
-//	output：
-//***************************************************/ 
-    
-  /////////////////////////////////////////////////////////
+ /////////////////////////////////////////////////////////
   reg [1:0]   WrFirstDCnt = 2'h0;
   
   always @( posedge SysClk or negedge Reset_N )  
   begin
     if (~Reset_N)           WrFirstDCnt <= # TCo_C 2'h0;
     else if (TestStopEn)    WrFirstDCnt <= # TCo_C 2'h0;
-    else if (TestStartEn)   WrFirstDCnt <= # TCo_C (|TestLen[31:2]) ? 2'h3 : TestLen[1:0];
+    else if (TestStartEn)   WrFirstDCnt <= # TCo_C (|TestLen[31:2]) ? 2'h1 : TestLen[1:0];
     else if (WrBurstEn )    WrFirstDCnt <= # TCo_C WrFirstDCnt - {1'h0,{|WrFirstDCnt}};
   end
   
@@ -615,7 +758,9 @@ module DdrTest
   always @( posedge SysClk)  TestWrBusyReg  <= # TCo_C TestWrBusy;
   always @( posedge SysClk)  TesrWrTestEnd  <= # TCo_C TestWrBusyReg & (~TestWrBusy)  ;
   
-  /////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+//Different Test case //
+/////////////////////////////////////////////////////////  
   always @( posedge SysClk)  
   begin
     case (TestMode)
@@ -627,7 +772,7 @@ module DdrTest
       2'b01:
       begin
         WrBurstEn <= # TCo_C 1'h0;
-        RdBurstEn <= # TCo_C (RamRdEnd & TestRdBusy)  | TestStartEn;
+        RdBurstEn <= # TCo_C (RamRdEnd & TestRdBusy )  | TestStartEn;
       end
       2'b10:
       begin
@@ -645,32 +790,10 @@ module DdrTest
       end
     endcase
   end
-  
-  
-  
-  /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
   assign    TestBusy  =  TestWrBusy | TestRdBusy ; //(O)Test Busy State  
-  
-//4444444444444444444444444444444444444444444444444444444
-
-
-//5555555555555555555555555555555555555555555555555555555
-//	
-//	Input：
-//	output：
-//***************************************************/ 
-    
-  /////////////////////////////////////////////////////////
-	
-//5555555555555555555555555555555555555555555555555555555
-
-
-//6666666666666666666666666666666666666666666666666666666
-//	
-//	Input：
-//	output：
-//***************************************************/ 
-    
+//////////////////////////////////////////////////////////////////////// 
+   
   Axi4FullDeplex
   # (
       .DDR_WRITE_FIRST  ( DDR_WRITE_FIRST ),
@@ -684,6 +807,7 @@ module DdrTest
     //Axi Slave Interfac Signal
     .AWID     ( AWID      ),  //(O)[WrAddr]Write address ID.
     .AWADDR   ( AWADDR    ),  //(O)[WrAddr]Write address.
+   // .AWADDR   ( Add_start    ),  //(O)[WrAddr]Write address.
     .AWLEN    ( AWLEN     ),  //(O)[WrAddr]Burst length.
     .AWSIZE   ( AWSIZE    ),  //(O)[WrAddr]Burst size.
     .AWBURST  ( AWBURST   ),  //(O)[WrAddr]Burst type.
@@ -704,6 +828,7 @@ module DdrTest
     ///////////                 
     .ARID     ( ARID      ),  //(O)[RdAddr]Read address ID.
     .ARADDR   ( ARADDR    ),  //(O)[RdAddr]Read address.
+  //  .ARADDR   ( Add_start_rd    ),  //(O)[RdAddr]Read address.
     .ARLEN    ( ARLEN     ),  //(O)[RdAddr]Burst length.
     .ARSIZE   ( ARSIZE    ),  //(O)[RdAddr]Burst size.
     .ARBURST  ( ARBURST   ),  //(O)[RdAddr]Burst type.
@@ -748,7 +873,5 @@ module DdrTest
     .bready   ( bready    )   //(O)[Answer] Response Ready
   );
   
-//6666666666666666666666666666666666666666666666666666666
-
 
 endmodule

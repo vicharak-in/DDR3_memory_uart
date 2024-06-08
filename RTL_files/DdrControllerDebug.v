@@ -1,71 +1,9 @@
 `timescale 100ps/10ps
 
-//`include  "ParamDefine.v"
-
-///////////////////////////////////////////////////////////
-/**********************************************************
-  功能描述：
-
-  重要输入信号要求：
-  详细设计方案文件编号：
-  仿真文件名：
-
-  编制：朱仁昌
-  创建日期： 2019-12-1
-  版本：V1、0
-  修改记录：
-  
-    2020.1.29 ---V1.0
-    ==============================
-    第一个版本
-    功能说明：
-    1、对DDR进行可配置的连续读写控制，并对数据进行检查；
-    2、数据与地址相关，可配置正向数据、反向数据、正向/反向交替，确保数据检查客观性；
-    3、可配置DDR控制器的Burst长度和Burst个数；
-    4、可配置测试的DDR控制器的起始地址和结束地址，电路对设置的测试空间循环测试；
-    5、测试数据错误个数（仅限于有读的操作）；
-    6、测试操作的总周期、有效操作周期、操作效率、带宽；
-    7、从测试起始进行计时；
-    8、通过指示灯直观指示状态和误码状况；
-    8、通过VIO进行测试配置、控制、统计结果和状态显示、波形抓取；
-    
-  /////////////////////   
-    2020.1.30 ---V1.1
-    ==============================
-    修改了使用上的一些限制，和代码的整理
-
-    修改了：
-    1、AXI Burst 长度（ALEN）的设置，使配置的Burst长度为任意值;
-    2、连续测试条件修改为TestLen = 0 或 32’hffffffff；
-    3、修改了读写越界的BUG——原来测试区域的最后一个数据读写会越界；
-    
-  /////////////////////   
-    2020.1.31 ---V1.2
-    ==============================
-    修改了参数化配置的需求
-
-    修改了：
-    1、Axi0和Axi1的时钟和复位分开
-    2、与AXI-DATA-WIDTH有关的参数全部使用变量代替；
-    3、增加了256和128位接口的测试选择；
-    4、修改Debuger的信号名称，便于理解；
-  
-  /////////////////////   
-    2020.2.2 ---V1.3
-    ==============================
-    修改了测试中发现的Bug
-
-    修改了：
-    1、CfgBurstLen在大于127时会直接采用255的Bug
-    2、修改CfgBurstLen在修改后第一次会沿用上一次的值；
-    3、修改了TestMode=3且TestLen小于3时，不启动Read的Bug；
-    4、提高DDR的写效率，把写间隔缩小到最小（一个时钟周期）；
-    5、添加读写Burst周期的测量——用于下一步效率改善测试；
-    
-**********************************************************/
+// `include  "ParamDefine.v"
 
 `define   Test_AXI0
-`define   Efinity_Debug
+`define Efinity_Debug
 
 module  DdrControllerDebug
 (
@@ -88,8 +26,15 @@ module  DdrControllerDebug
   input           Axi0Clk   , //Axi 0 Channel Clock
   input           Axi1Clk   , //Axi 1 Channel Clock
   input   [ 1:0]  PllLocked , //PLL Locked
- // input  [255:0]  Ram_Wr    ,
-   input           TestStart ,
+  output          clk_t,
+//  input           TestStart ,
+ // output              r_en        ,
+//  output              r_n         ,
+  output   [3:0]      add_inc     ,
+  output   [3:0]      add_rd_inc  ,
+//  input    [31:0]     StartAddr   ,
+//  input    [31:0]     StartAddrRd ,
+ 
                                                  
   //DDR Controner Control Signal
   output      DdrCtrl_CFG_RST_N          , //(O)[Control]DDR Controner Reset(Low Active)     
@@ -162,7 +107,7 @@ module  DdrControllerDebug
 	parameter   SYS_CLK_PERIOD    = 32'd100_000_000 ; //System Clock Period
 	
 	parameter   AXI0_CLK_PERIOD   = 32'd100_000_000 ; //AXI Clock Period(Hz)
-	parameter   AXI0_DATA_WIDTH   = 256             ; //AXI Data Width(Bit)
+    parameter   AXI0_DATA_WIDTH   = 256             ; //AXI Data Width(Bit)
 	parameter   AXI0_WR_ID        = 8'haa           ; //AXI Write ID
 	parameter   AXI0_RD_ID        = 8'h55           ; //AXI Read ID	
 	
@@ -171,14 +116,14 @@ module  DdrControllerDebug
 	parameter   AXI1_WR_ID        = 8'h5a           ; //AXI Write ID
 	parameter   AXI1_RD_ID        = 8'ha5           ; //AXI Read ID
 		
-	parameter   DDR_CLK_PERIOD    = 32'd800_000_000 ; //DDR Clock Period(Hz)
-	parameter   DDR_START_ADDRESS = 32'h00_00_10_00 ; //DDR Memory Start Address
+	parameter   DDR_CLK_PERIOD    = 32'd1066_000_000 ; //DDR Clock Period(Hz)
+	parameter   DDR_START_ADDRESS = 32'h00_00_00_00 ; //DDR Memory Start Address
 	parameter   DDR_END_ADDRESS   = 32'h3f_ff_ff_ff ; //DDR Memory End Address
 	parameter   DDR_DATA_WIDTH    = 32              ; //DDR Data Width(Bit)	                              	
-  parameter   DDR_WRITE_FIRST   =  1'h1           ; //1:Write First ; 0: Read First
-  parameter   RIGHT_CNT_WIDTH   = 27              ; //Data Checker Right Counter Width  
+    parameter   DDR_WRITE_FIRST   =  1'h1           ; //1:Write First ; 0: Read First
+    parameter   RIGHT_CNT_WIDTH   = 27              ; //Data Checker Right Counter Width  
   
-  /////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
 
 
 /*0000000000000000000000000000000000000000000000000000000
@@ -188,7 +133,7 @@ module  DdrControllerDebug
 //***************************************************/
   
   /////////////////////////////////////////////////////////
-   //Power On Reset Process
+  //Power On Reset Process
   reg [7:0] PowerOnResetCnt = 8'h0  ; //Power On Reset Counter
   reg [2:0] ResetShiftReg   = 3'h0  ; //Reset Shift Regist
   wire      DdrResetCtrl            ; //DDR Controller Reset Control
@@ -205,7 +150,7 @@ module  DdrControllerDebug
     ResetShiftReg[0] <= # TCo_C  (&PowerOnResetCnt) & (~DdrResetCtrl);
   end    
   
-  /////////////////////////////////////////////////////////
+ /////////////////////////////////////////////////////////
   //DDR Reset  
   wire  DDrCtrlReset  ;  //DDR Controner Reset(Low Active)  
   wire  DdrSeqReset   ;  //DDR Controner Sequencer Reset    
@@ -239,8 +184,7 @@ module  DdrControllerDebug
   end
     
   wire    Reset_N  = SysClkResetReg[2]; //System Reset (Low Active)
-  
-   
+    
   /////////////////////////////////////////////////////////
   reg   [2:0] Axi0ResetReg = 3'h0;    //System Clock Reset Register
   
@@ -264,7 +208,8 @@ module  DdrControllerDebug
   end
     
   wire    Axi1Rst_N  = Axi1ResetReg[2]; //System Reset (Low Active)
-  /////////////////////////////////////////////////////////
+    
+/////////////////////////////////////////////////////////
   
 //0000000000000000000000000000000000000000000000000000000  
 
@@ -291,7 +236,7 @@ module  DdrControllerDebug
   wire  [31:0]  CfgEndAddr    ; //(I)Config End Address
   wire  [31:0]  CfgTestLen    ; //(I)Cinfig Test Length
   wire          TestStart     ; //(I)Test Start Control
-    //Test State              
+  //Test State              
   wire          TestBusy      ; //(O)Test Busy State
   wire          TestErr       ; //(O)Test Data Error
   wire          TestRight     ; //(O)Test Data Right
@@ -306,6 +251,24 @@ module  DdrControllerDebug
   wire  [255:0] AxiRdData     ; //Axi4 Read Data
   wire          AxiWrDMode    ; //Axi4 Write DDR End
   wire          AxiRdDMode    ; //Axi4 Read DDR End
+  wire          RamRdEnd      ;
+  wire          TestRdBusy    ;
+  wire   [31:0] NextRdAddrCnt ;
+  wire   [31:0] NextWrAddrCnt ;
+  wire   [31:0] Add_start_rd  ;
+  wire          rd_start ;
+  wire          r_start ;
+  wire  [3:0] add_inc_rd;
+  wire  [3:0] add_inc_start;
+  wire [31:0] Add_start ;
+  wire        RdEn ;
+  wire        WrEn ;
+  wire  [31:0] TestWrStartAddr ;
+  wire         TestDdrWrEnd ;
+  wire  [255:0] RamWrDOut ;
+  wire  [255:0] RamWrData ;
+  
+
 
   DdrTest  
   # (
@@ -322,8 +285,6 @@ module  DdrControllerDebug
     //System Signal
     .SysClk       ( Axi0Clk           ), //(O)System Clock
     .Reset_N      ( Axi0Rst_N         ), //(I)System Reset (Low Active)
-   
-   // .RamWrData    ( Ram_Wr            ),
     //Test Configuration & State      
     .CfgTestMode  ( CfgTestMode       ), //(I)Test Mode: 1:Read Only;2:Write Only;3:Write/Read alternate
     .CfgBurstLen  ( CfgBurstLen       ), //(I)Config Burst Length;
@@ -332,6 +293,23 @@ module  DdrControllerDebug
     .CfgTestLen   ( CfgTestLen        ), //(I)Cinfig Test Length
     .CfgDataMode  ( CfgDataMode       ), //Config Test Data Mode 0: Nomarl 1:Reverse
     .TestStart    ( TestStart         ), //(I)Test Start Control
+    .TestRdBusy   (TestRdBusy         ),
+    .RamRdEnd     ( RamRdEnd          ),
+    .NextRdAddrCnt ( NextRdAddrCnt    ),
+    .NextWrAddrCnt ( NextWrAddrCnt    ),
+    .RdBurstEn     (RdEn),
+    .RamWrDOut     (RamWrDOut),
+    .RamWrData     (RamWrData),
+    .WrBurstEn     (WrEn),
+    .TestDdrWrEnd  (TestDdrWrEnd),
+    .TestWrStartAddr (TestWrStartAddr),
+    //.r_n   (rd_start),
+    .add_rd_inc (add_inc_start),
+   // .Add_start (Add_start),
+   // .r_en   (r_start) ,
+    //.Add_start_rd (Add_start_rd),
+    .add_inc  (add_inc_rd),
+ 
     //Test State  & Result            
     .TestBusy     ( TestBusy          ), //(O)Test Busy State
     .TestErr      ( TestErr           ), //(O)Test Data Error
@@ -377,7 +355,34 @@ module  DdrControllerDebug
     .bready       ( DdrCtrl_BREADY_0  )   //(O)[Answer] Response Ready
   );
 
+  
+clk_gen 
+clk_gen_inst(
+    .clk(Axi0Clk),
+    .rst (1'b1),
+    //.t_in (t_in),
+    .clk_temp (clk_t)
+);
 
+/*lfsr_addr
+lfsr_addr_inst (
+    .clk (Axi0Clk),      // Clock input
+    .lfsr_out (test_reg),  // 32-bit LFSR output
+    .TestStartEn (test_start),
+    .WrBurstEn (wr_burst),
+    .TestDdrWrEnd (test_end),
+    .WrAxiCross4K (wr_axi) 
+);
+
+lfsr_rd_addr 
+lfsr_rd_addr_inst(
+    .clk (Axi0Clk),      // Clock input
+    .lfsr_rd_out (test_rd_reg),  // 32-bit LFSR output
+    .TestStartEn (test_start) ,
+    .RdBurstEn (rd_burst),
+    .TestDdrRdEnd (test_rd_end),
+    .RdAxiCross4K (rd_axi) 
+);*/
 
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -911,10 +916,8 @@ module  DdrControllerDebug
 `ifdef  Test_AXI0
 //&&&&&&&&&&&&&&&&&&&&&&&&&&
 
-
     wire  DdrTest_clk = Axi0Clk    ;
-    
-    
+      
 //&&&&&&&&&&&&&&&&&&&&&&&&&&
 `endif
 //&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -957,7 +960,7 @@ module  DdrControllerDebug
     wire  [31:0]      DdrTest_CfgTestLen              ;
     wire              DdrTest_TestStart               ;
     
-  edb_top edb_top_inst (
+  edb_top edb_top_inst(
   ////////////////
     .bscan_CAPTURE        ( jtag_inst1_CAPTURE  ),
     .bscan_DRCK           ( jtag_inst1_DRCK     ),
@@ -1017,6 +1020,24 @@ module  DdrControllerDebug
     .Axi_RDATA_191_160    ( Axi_RDATA_191_160   ),
     .Axi_RDATA_223_192    ( Axi_RDATA_223_192   ),
     .Axi_RDATA_255_224    ( Axi_RDATA_255_224   ),
+    .Axi_clk_t            (clk_t),
+    .Axi_TestRdBusy       (TestRdBusy),
+    .Axi_RamRdEnd         (RamRdEnd),
+    .Axi_RdBurstEn         (RdEn),
+    .Axi_WrBurstEn         (WrEn),
+    .Axi_TestDdrWrEnd      (TestDdrWrEnd),
+    .Axi_TestWrStartAddr   (TestWrStartAddr),
+    .Axi_AxiWrData         (AxiWrData),
+    .Axi_RamWrDOut         (RamWrDOut) ,
+    .Axi_RamWrData         (RamWrData) ,
+    //  .Axi_r_n         (rd_start),
+  //  .Axi_r_en        (r_start),
+    .Axi_add_inc     (add_inc_rd),
+    .Axi_add_rd_inc  (add_inc_start),
+  //  .Axi_Add_start   (Add_start),
+  //  .Axi_Add_start_rd (Add_start_rd),
+    .Axi_NextRdAddrCnt    ( NextRdAddrCnt),
+    .Axi_NextWrAddrCnt    ( NextWrAddrCnt),
     
   ////////////////
     .DdrTest_clk                    ( DdrTest_clk                     ),
@@ -1049,7 +1070,7 @@ module  DdrControllerDebug
                                               
   /////////////////////////////////////////////////////////
   
- // assign  TestStart     = DdrTest_TestStart     ;
+  assign  TestStart     = DdrTest_TestStart     ;
   assign  DdrResetCtrl  = DdrTest_DdrReset      ;
   assign  CfgDataMode   = DdrTest_CfgDataMode   ;
   assign  CfgTestMode   = DdrTest_CfgTestMode   ;

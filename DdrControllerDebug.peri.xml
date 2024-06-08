@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<efxpt:design_db name="Test_two_design" device_def="T85F324" location="/home/prapti/imp_project/imp_ddr/Efinity" version="2023.1.150" db_version="20231999" last_change_date="Fri Mar  1 09:41:11 2024" xmlns:efxpt="http://www.efinixinc.com/peri_design_db" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/peri_design_db peri_design_db.xsd ">
+<efxpt:design_db name="DdrControllerDebug" device_def="T85F324" location="/home/prapti/Efinity_Project/ddr3_test_custom_data/Efinity" version="2023.1.150" db_version="20231999" last_change_date="Fri Apr  5 18:36:49 2024" xmlns:efxpt="http://www.efinixinc.com/peri_design_db" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/peri_design_db peri_design_db.xsd ">
     <efxpt:device_info>
         <efxpt:iobank_info>
             <efxpt:iobank name="1A" iostd="3.3 V LVTTL / LVCMOS"/>
@@ -27,43 +27,42 @@
         <efxpt:gpio name="DdrPllClkIn" gpio_def="GPIOR_186" mode="input" bus_name="" is_lvds_gpio="false" io_standard="3.3 V LVTTL / LVCMOS">
             <efxpt:input_config name="DdrPllClkIn" name_ddio_lo="" conn_type="pll_clkin" is_register="false" clock_name="" is_clock_inverted="false" pull_option="weak pulldown" is_schmitt_trigger="true" ddio_type="none"/>
         </efxpt:gpio>
-        <efxpt:gpio name="RD_trig" gpio_def="GPIOR_183" mode="input" bus_name="" is_lvds_gpio="false" io_standard="3.3 V LVTTL / LVCMOS">
-            <efxpt:input_config name="reset" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none"/>
+        <efxpt:gpio name="LED[0]" gpio_def="GPIOT_RXP24" mode="output" bus_name="LED" is_lvds_gpio="true" io_standard="3.3 V LVTTL / LVCMOS">
+            <efxpt:output_config name="LED[0]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="true" tied_option="none" ddio_type="none" drive_strength="2"/>
         </efxpt:gpio>
-        <efxpt:gpio name="axi_pll" gpio_def="GPIOL_15" mode="input" bus_name="" is_lvds_gpio="false" io_standard="3.3 V LVTTL / LVCMOS">
-            <efxpt:input_config name="axi_pll" name_ddio_lo="" conn_type="pll_clkin" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none"/>
+        <efxpt:gpio name="LED[1]" gpio_def="GPIOT_RXN24" mode="output" bus_name="LED" is_lvds_gpio="true" io_standard="3.3 V LVTTL / LVCMOS">
+            <efxpt:output_config name="LED[1]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="true" tied_option="none" ddio_type="none" drive_strength="2"/>
         </efxpt:gpio>
-        <efxpt:gpio name="check_pin" gpio_def="GPIOT_RXP24" mode="output" bus_name="" is_lvds_gpio="true" io_standard="3.3 V LVTTL / LVCMOS">
-            <efxpt:output_config name="RD_led" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" drive_strength="1"/>
+        <efxpt:gpio name="LED[2]" gpio_def="GPIOT_RXP27" mode="output" bus_name="LED" is_lvds_gpio="true" io_standard="3.3 V LVTTL / LVCMOS">
+            <efxpt:output_config name="LED[2]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="true" tied_option="none" ddio_type="none" drive_strength="2"/>
         </efxpt:gpio>
-        <efxpt:gpio name="data" gpio_def="GPIOL_73" mode="input" bus_name="" is_lvds_gpio="false" io_standard="3.3 V LVTTL / LVCMOS">
-            <efxpt:input_config name="s_data" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none"/>
+        <efxpt:gpio name="LED[3]" gpio_def="GPIOT_RXN27" mode="output" bus_name="LED" is_lvds_gpio="true" io_standard="3.3 V LVTTL / LVCMOS">
+            <efxpt:output_config name="LED[3]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="true" tied_option="none" ddio_type="none" drive_strength="2"/>
         </efxpt:gpio>
-        <efxpt:gpio name="out_tx_s_data" gpio_def="GPIOR_187" mode="output" bus_name="" is_lvds_gpio="false" io_standard="3.3 V LVTTL / LVCMOS">
-            <efxpt:output_config name="last_s_out" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" drive_strength="1"/>
+        <efxpt:gpio name="LED[4]" gpio_def="GPIOL_73" mode="output" bus_name="LED" is_lvds_gpio="false" io_standard="3.3 V LVTTL / LVCMOS">
+            <efxpt:output_config name="LED[4]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="true" tied_option="none" ddio_type="none" drive_strength="2"/>
         </efxpt:gpio>
-        <efxpt:gpio name="trig" gpio_def="GPIOL_72" mode="input" bus_name="" is_lvds_gpio="false" io_standard="3.3 V LVTTL / LVCMOS">
-            <efxpt:input_config name="rst" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none"/>
+        <efxpt:gpio name="LED[5]" gpio_def="GPIOL_75" mode="output" bus_name="LED" is_lvds_gpio="false" io_standard="3.3 V LVTTL / LVCMOS">
+            <efxpt:output_config name="LED[5]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="true" tied_option="none" ddio_type="none" drive_strength="2"/>
         </efxpt:gpio>
-        <efxpt:gpio name="trig_1" gpio_def="GPIOL_62" mode="input" bus_name="" is_lvds_gpio="false" io_standard="3.3 V LVTTL / LVCMOS">
-            <efxpt:input_config name="TestStart" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none"/>
+        <efxpt:gpio name="LED[6]" gpio_def="GPIOR_178" mode="output" bus_name="LED" is_lvds_gpio="false" io_standard="3.3 V LVTTL / LVCMOS">
+            <efxpt:output_config name="LED[6]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="true" tied_option="none" ddio_type="none" drive_strength="2"/>
+        </efxpt:gpio>
+        <efxpt:gpio name="LED[7]" gpio_def="GPIOR_183" mode="output" bus_name="LED" is_lvds_gpio="false" io_standard="3.3 V LVTTL / LVCMOS">
+            <efxpt:output_config name="LED[7]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="true" tied_option="none" ddio_type="none" drive_strength="2"/>
         </efxpt:gpio>
         <efxpt:global_unused_config state="input with weak pullup"/>
+        <efxpt:bus name="LED" mode="output" msb="7" lsb="0"/>
     </efxpt:gpio_info>
     <efxpt:pll_info>
-        <efxpt:pll name="DdrPLL" pll_def="PLL_BR0" ref_clock_name="" ref_clock_freq="50.0000" multiplier="32" pre_divider="1" post_divider="4" reset_name="" locked_name="PllLocked[0]" is_ipfrz="false" is_bypass_lock="true">
-            <efxpt:output_clock name="DdrClk" number="0" out_divider="1" adv_out_phase_shift="0"/>
+        <efxpt:pll name="DdrPLL" pll_def="PLL_BR0" ref_clock_name="" ref_clock_freq="50.0000" multiplier="32" pre_divider="1" post_divider="1" reset_name="" locked_name="PllLocked[0]" is_ipfrz="false" is_bypass_lock="true">
+            <efxpt:output_clock name="DdrClk" number="0" out_divider="3" adv_out_phase_shift="0"/>
             <efxpt:adv_prop ref_clock_mode="external" ref_clock1_name="" ext_ref_clock_id="2" clksel_name="" feedback_clock_name="" feedback_mode="internal"/>
         </efxpt:pll>
-        <efxpt:pll name="AxiPLL" pll_def="PLL_BR2" ref_clock_name="" ref_clock_freq="10.0000" multiplier="140" pre_divider="1" post_divider="2" reset_name="" locked_name="PllLocked[1]" is_ipfrz="false" is_bypass_lock="true">
-            <efxpt:output_clock name="uart_clk" number="1" out_divider="10" adv_out_phase_shift="0"/>
-            <efxpt:output_clock name="Axi0Clk" number="0" out_divider="7" adv_out_phase_shift="0"/>
-            <efxpt:output_clock name="SysClk" number="2" out_divider="7" adv_out_phase_shift="0"/>
-            <efxpt:adv_prop ref_clock_mode="external" ref_clock1_name="" ext_ref_clock_id="2" clksel_name="" feedback_clock_name="" feedback_mode="internal"/>
-        </efxpt:pll>
-        <efxpt:pll name="axi_pll" pll_def="PLL_BL0" ref_clock_name="" ref_clock_freq="30.0000" multiplier="140" pre_divider="3" post_divider="2" reset_name="" locked_name="" is_ipfrz="false" is_bypass_lock="true">
-            <efxpt:output_clock name="i_clk" number="0" out_divider="7" adv_out_phase_shift="0"/>
-            <efxpt:output_clock name="axi_clk" number="1" out_divider="10" adv_out_phase_shift="0"/>
+        <efxpt:pll name="AxiPLL" pll_def="PLL_BR2" ref_clock_name="" ref_clock_freq="10.0000" multiplier="160" pre_divider="1" post_divider="8" reset_name="" locked_name="PllLocked[1]" is_ipfrz="false" is_bypass_lock="true">
+            <efxpt:output_clock name="Axi1Clk" number="1" out_divider="2" adv_out_phase_shift="0"/>
+            <efxpt:output_clock name="Axi0Clk" number="0" out_divider="2" adv_out_phase_shift="0"/>
+            <efxpt:output_clock name="SysClk" number="2" out_divider="2" adv_out_phase_shift="0"/>
             <efxpt:adv_prop ref_clock_mode="external" ref_clock1_name="" ext_ref_clock_id="2" clksel_name="" feedback_clock_name="" feedback_mode="internal"/>
         </efxpt:pll>
     </efxpt:pll_info>
@@ -87,7 +86,7 @@
         </efxpt:jtag>
     </efxpt:jtag_info>
     <efxpt:ddr_info>
-        <efxpt:ddr name="DdrCtrl" ddr_def="DDR_0" cs_preset_id="200" cs_mem_type="DDR3" cs_ctrl_width="x16" cs_dram_width="x16" cs_dram_density="4G" cs_speedbin="800D" target0_enable="true" target1_enable="false" ctrl_type="ena_user_rst" adv_density_en="false" cs_row_width="0" cs_col_width="0">
+        <efxpt:ddr name="DdrCtrl" ddr_def="DDR_0" cs_preset_id="200" cs_mem_type="DDR3" cs_ctrl_width="x16" cs_dram_width="x16" cs_dram_density="4G" cs_speedbin="1066E" target0_enable="true" target1_enable="false" ctrl_type="ena_user_rst" adv_density_en="false" cs_row_width="0" cs_col_width="0">
             <efxpt:gen_pin_target0>
                 <efxpt:pin name="DdrCtrl_ALEN_0" type_name="ALEN_0" is_bus="true"/>
                 <efxpt:pin name="DdrCtrl_AVALID_0" type_name="AVALID_0" is_bus="false"/>
@@ -175,12 +174,12 @@
                 <efxpt:param name="tRRD" value="4.000" value_type="float"/>
                 <efxpt:param name="tWTR" value="7.500" value_type="float"/>
                 <efxpt:param name="tRTP" value="7.500" value_type="float"/>
-                <efxpt:param name="tRFC" value="350.000" value_type="float"/>
+                <efxpt:param name="tRFC" value="260.000" value_type="float"/>
                 <efxpt:param name="tRC" value="52.500" value_type="float"/>
             </efxpt:cs_memory_timing>
             <efxpt:cs_control>
                 <efxpt:param name="EN_AUTO_SELF_REF" value="No" value_type="str"/>
-                <efxpt:param name="AMAP" value="ROW-COL_HIGH-BANK-COL_LOW" value_type="str"/>
+                <efxpt:param name="AMAP" value="BANK-ROW-COL" value_type="str"/>
                 <efxpt:param name="EN_AUTO_PWR_DN" value="Off" value_type="str"/>
             </efxpt:cs_control>
             <efxpt:cs_gate_delay>

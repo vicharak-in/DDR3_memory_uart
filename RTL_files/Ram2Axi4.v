@@ -1,16 +1,7 @@
+
 `timescale 100ps/10ps
 
 ////////////////// DdrWrCtrl /////////////////////////////
-/**********************************************************
-  Function Description:
-
-  Establishment : Richard Zhu
-  Create date   : 2020-01-09
-  Versions      : V0.1
-  Revision of records:
-  Ver0.1
-
-**********************************************************/
 
 module  DdrWrCtrl
 (
@@ -109,8 +100,8 @@ module  DdrWrCtrl
 
 //1111111111111111111111111111111111111111111111111111111
 //  Process Address Channel
-//  Input：
-//  output：
+//  Input��
+//  output��
 //***************************************************/
 
   /////////////////////////////////////////////////////////
@@ -153,8 +144,6 @@ module  DdrWrCtrl
 
 //22222222222222222222222222222222222222222222222222222
 //  Process DDR Operate
-//  Input：
-//  output：
 //***************************************************/
 
   /////////////////////////////////////////////////////////
@@ -178,8 +167,7 @@ module  DdrWrCtrl
     else if (AddrWrEn)  DataWrAddrAva <= # TCo_C DataWrValid;
   end
     
- // wire	DataWrNextBrst  = (AddrWrEn | DataWrAddrAva ) & DataWrEnd;
-  wire	DataWrNextBrst  = 0;
+  wire	DataWrNextBrst  = (AddrWrEn | DataWrAddrAva ) & DataWrEnd;
   
   always @( posedge SysClk)  DataWrStart    <= # TCo_C (AddrWrEn & (~DataWrValid)) | DataWrNextBrst;
   
@@ -198,8 +186,7 @@ module  DdrWrCtrl
   begin
     if (!Reset_N)           WrBurstCnt  <= # TCo_C 8'h0;
     else if (DataWrStart)   WrBurstCnt  <= # TCo_C WrBurstLen;
-    //else if (DataWrEn)      WrBurstCnt  <= # TCo_C WrBurstCnt - {7'h0,(|WrBurstCnt)};
-    else if (DataWrEn)      WrBurstCnt  <= # TCo_C WrBurstCnt;
+    else if (DataWrEn)      WrBurstCnt  <= # TCo_C WrBurstCnt - {7'h0,(|WrBurstCnt)};
   end
 
   always @( posedge SysClk)
@@ -224,8 +211,6 @@ module  DdrWrCtrl
 
 //3333333333333333333333333333333333333333333333333333333
 //  Write Address
-//  Input：
-//  output：
 //***************************************************/
 
   /////////////////////////////////////////////////////////
@@ -236,8 +221,7 @@ module  DdrWrCtrl
   begin
     if (~DataWrValid)         WrAddrCnt <= # TCo_C WrStartAddr;
     else if (DataWrNextBrst)  WrAddrCnt <= # TCo_C WrStartAddr;
-   // else if (DataWrEn)        WrAddrCnt <= # TCo_C WrAddrCnt  + {24'h0,WrByteNum};
-    else if (DataWrEn)        WrAddrCnt <= # TCo_C WrAddrCnt  ;
+    else if (DataWrEn)        WrAddrCnt <= # TCo_C WrAddrCnt  + {24'h0,WrByteNum};
   end
 
   /////////////////////////////////////////////////////////
@@ -261,14 +245,8 @@ module  DdrWrCtrl
   wire          RamWrNext = DataWrEn    ;               //(O)[DdrWrCtrl]Ram Write Next
   wire  [31:0]  RamWrAddr = WrAddrCnt   ;               //(O)[DdrWrCtrl]Ram Write Address
   
-  /////////////////////////////////////////////////////////
-
-//3333333333333333333333333333333333333333333333333333333
-
-//4444444444444444444444444444444444444444444444444444444
+/////////////////////////////////////////////////////////
 //  Write Address
-//  Input：
-//  output：
 //***************************************************/
 
   /////////////////////////////////////////////////////////
@@ -289,19 +267,10 @@ module  DdrWrCtrl
   /////////////////////////////////////////////////////////
   wire    BREADY = BackReady; //(O)[WrResp]Response ready. This signal indicates that the master can accept a write response.
 
-  /////////////////////////////////////////////////////////
-
-//4444444444444444444444444444444444444444444444444444444
-
-
-//5555555555555555555555555555555555555555555555555555555
+/////////////////////////////////////////////////////////
 //  Write Address
-//  Input：
-//  output：
 //***************************************************/
-
-  /////////////////////////////////////////////////////////
-//5555555555555555555555555555555555555555555555555555555
+/////////////////////////////////////////////////////////
 
 
 
@@ -310,23 +279,10 @@ endmodule
 /////////////////// DdrWrCtrl ///////////////////////////////////
 
 
-
-
-
-
-
-
+/////////////////////////////////////////////////////////////////
 /////////////////// DdrRdCtrl ///////////////////////////////////
-/**********************************************************
-  Function Description:
+/**********************************************************/
 
-  Establishment : Richard Zhu
-  Create date   : 2020-01-09
-  Versions      : V0.1
-  Revision of records:
-  Ver0.1
-
-**********************************************************/
 module  DdrRdCtrl
 (
   //System Signal
@@ -420,8 +376,6 @@ module  DdrRdCtrl
 
 //1111111111111111111111111111111111111111111111111111111
 //  Process AXI Operate Parameter
-//  Input：
-//  output：
 //***************************************************/
 
   /////////////////////////////////////////////////////////
@@ -461,8 +415,6 @@ module  DdrRdCtrl
 
 //22222222222222222222222222222222222222222222222222222
 //  Process DDR Operate
-//  Input：
-//  output：
 //***************************************************/
 
   /////////////////////////////////////////////////////////
@@ -501,9 +453,8 @@ module  DdrRdCtrl
 
   always @( posedge SysClk)
   begin
-    if (DataRdValid)  DataRdTimeOut <= # TCo_C 8'h01;
-    //else              DataRdTimeOut <= # TCo_C DataRdTimeOut - {7'h0, (|DataRdTimeOut)};
-    else              DataRdTimeOut <= # TCo_C DataRdTimeOut ;
+    if (DataRdValid)  DataRdTimeOut <= # TCo_C 8'hff;
+    else              DataRdTimeOut <= # TCo_C DataRdTimeOut - {7'h0, (|DataRdTimeOut)};
   end
 
   always @( posedge SysClk)  DataRdReadyClr <= # TCo_C (DataRdTimeOut == 5'h1);
@@ -551,13 +502,6 @@ module  DdrRdCtrl
 
 //22222222222222222222222222222222222222222222222222222
 
-
-
-
-//3333333333333333333333333333333333333333333333333333333
-//
-//  Input：
-//  output：
 //***************************************************/
 
   /////////////////////////////////////////////////////////
@@ -774,10 +718,7 @@ module Axi4FullDeplex
   output              bready  ; //(O)[Answer]Response Ready
 
 //1111111111111111111111111111111111111111111111111111111
-//
-//  Input：
-//  output：
-//***************************************************/
+/************************************/
 
   /////////////////////////////////////////////////////////
   reg           OpType = 1'h0;
@@ -834,12 +775,6 @@ module Axi4FullDeplex
 
 //1111111111111111111111111111111111111111111111111111111
 
-
-
-//22222222222222222222222222222222222222222222222222222
-//
-//  Input：
-//  output：
 //***************************************************/
 
   /////////////////////////////////////////////////////////
