@@ -10,7 +10,7 @@
   - If DDR_Clk = 400 MHz, Speed grade = 800D / 800E
   - If DDR_Clk = 533.33 MHz, Speed grade = 1066E
 - Set other parameters in the DDR block as per the speed grade, referring to below provided document:
-[Industrial_1.35V_x16 only_4G_D_DDR3_Samsung_Spec_Rev1.02_Aug.14.book - DS_K4B4G1646D_BY_M_Rev1_02-0.pdf](DDR3_memory_uart/blob/Random_addr_LFSR_Incremental_addr/Industrial_1.35V_x16%20only_4G_D_DDR3_Samsung_Spec_Rev1.02_Aug.14.book%20-%20DS_K4B4G1646D_BY_M_Rev1_02-0.pdf)
+[Industrial_1.35V_x16 only_4G_D_DDR3_Samsung_Spec_Rev1.02_Aug.14.book - DS_K4B4G1646D_BY_M_Rev1_02-0.pdf](https://github.com/vicharak-in/DDR3_memory_uart/blob/Random_addr_LFSR_Incremental_addr/Industrial_1.35V_x16%20only_4G_D_DDR3_Samsung_Spec_Rev1.02_Aug.14.book%20-%20DS_K4B4G1646D_BY_M_Rev1_02-0.pdf)
 
 ## Manual Debugger
 - Used for debugging the design.
