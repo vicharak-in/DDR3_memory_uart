@@ -2,6 +2,26 @@
 
 This README provides detailed information about the DDR design and debugging procedures. In this design, data passes through UART Rx to the DDR debug controller and then to UART Tx. A manual debugger is used to debug the entire design.
 
+## Testing Setup
+
+- **UART Rx Baudrate**: 115200, UART Rx clock: 100MHz.
+- **AXI0 clock**: 100MHz.
+- **DDR clock**: 400MHz.
+- **UART Tx Baudrate**: 115200, UART Tx Clock: 70MHz.
+
+- No need for any external trigger when the testing whole design.
+- UART Rx data pin connected with GPIOL_73(H13) pin, the 7th pin of GPIO on Vaaman.
+- UART Tx data pin connected with GPIOR_187 (T8) pin, the 30th pin of GPIO on Vaaman.
+
+- Additional pin for testing data coming from DDR to UART Tx: check_pin = GPIOT_RXP24, USER_LED0 (only for testing); no external connection needed.
+
+- For testing only the write part of this design, set a trigger pin (`rst` signal) before the DDR_Wr_Ctrl. Connect this pin's wire to GND when the design is waiting for trigger stage. The pin is connected with GPIOL_72(H14), the 10th pin of GPIO on the Vaaman board.
+
+**Data Transfer**
+- Data is passed through UART at 115200 baudrate.
+- Address is generated on the DDR side.
+- Ensure data received on the UART Rx side is transmitted to the DDR at 115200 baudrate.
+  
 ## Design Architecture
 
 ### Modules Description
