@@ -1,21 +1,9 @@
 `timescale 100ps/10ps
 
-////////////////// DdrTest /////////////////////////////
-/**********************************************************
-  Function Description: 
-
-  Establishment : Richard Zhu 
-  Create date   : 2020-01-09 
-  Versions      : V0.1 
-  Revision of records: 
-  Ver0.1
-  
-**********************************************************/
-
 module DdrTest
 # (
   parameter   AXI_DATA_WIDTH    = 256             ,
-	parameter   DDR_START_ADDRESS = 32'h00_00_10_00 ,  //DDR Memory Start Address
+	parameter   DDR_START_ADDRESS = 32'h00_00_21_00 ,  //DDR Memory Start Address
 	parameter   DDR_END_ADDRESS   = 32'h0f_ff_ff_ff ,  //DDR Memory End Address
   parameter   DDR_WRITE_FIRST   = 1'h0            ,   //1:Write First ; 0: Read First
   parameter   RIGHT_CNT_WIDTH   = 27              ,      
@@ -26,8 +14,10 @@ module DdrTest
   //System Signal
   input               SysClk      , //(O)System Clock
   input               Reset_N     , //(I)System Reset (Low Active)
- // input   [  255 : 0] RamWrData   ,
-  
+  input   [  255 : 0] RamWrData   ,
+  output  [  255 : 0] RamRdData   ,
+//  output      reg     read_led    , 
+//  input              R_trig,
   //Test Configuration & State
   input   [      1:0] CfgTestMode , //(I)Test Mode: 1:Read Only;2:Write Only;3:Write/Read alternate
   input   [      7:0] CfgBurstLen , //(I)Config Burst Length;
@@ -40,7 +30,8 @@ module DdrTest
   output              TestBusy    , //(O)Test Busy State  
   output              TestErr     , //(O)Test Data Error
   output              TestRight   , //(O)Test Data Right
-  //AXI4 Operate                  
+  //AXI4 Operate 
+ // output     reg    trig_rd ,
   output              AxiWrEn     , //Axi4 Write Enable
   output  [     31:0] AxiWrStartA , //Axi4 Write Start Address
   output  [     31:0] AxiWrAddr   , //Axi4 Write Address
@@ -82,8 +73,8 @@ module DdrTest
 );
 
  	//Define  Parameter
-	/////////////////////////////////////////////////////////
-	parameter		TCo_C   		= 1;    
+/////////////////////////////////////////////////////////
+  parameter		TCo_C   		= 1;    
 		
   localparam  AXI_BYTE_NUMBER   = AXI_DATA_WIDTH/8        ;
   localparam  AXI_DATA_SIZE     = $clog2(AXI_BYTE_NUMBER) ;  
@@ -243,7 +234,7 @@ module DdrTest
   //Operate Control & State
   wire   RamWrStart  = WrBurstEn ; //(I)[DdrWrCtrl]Ram Operate Start
   
-  wire  [ADW_C-1:0]  RamWrData   ; //(I)[DdrWrCtrl]Ram Write Data
+ /// wire  [ADW_C-1:0]  RamWrData   ; //(I)[DdrWrCtrl]Ram Write Data
   wire               RamWrEnd    ; //(O)[DdrWrCtrl]Ram Operate End
   wire  [     31:0]  RamWrAddr   ; //(O)[DdrWrCtrl]Ram Write Address
   wire               RamWrNext   ; //(O)[DdrWrCtrl]Ram Write Next
@@ -350,7 +341,7 @@ module DdrTest
   	.DdrWrData  ( RamWrDOut   )   //(O)[DdrWrDataGen]DDR Write Data
   );
   
-   assign RamWrData = WrDataMode ? (~RamWrDOut) : RamWrDOut;
+ //  assign RamWrData = WrDataMode ? (~RamWrDOut) : RamWrDOut;
   
   /////////////////////////////////////////////////////////
   //AXI4 Operate 
@@ -462,7 +453,7 @@ module DdrTest
   wire              RamRdEnd    ; //(O)[DdrRdCtrl]Ram Read End
   wire  [     31:0] RamRdAddr   ; //(O)[DdrRdCtrl]Ram Read Addrdss
   wire              RamRdDAva   ; //(O)[DdrRdCtrl]Ram Read Available
-  wire  [ADW_C-1:0] RamRdData   ; //(O)[DdrRdCtrl]Ram Read Data
+ // wire  [ADW_C-1:0] RamRdData   ; //(O)[DdrRdCtrl]Ram Read Data
   wire              RamRdBusy   ; //(O)Ram Read Busy
   wire              RamRdALoad  ; //(O)Ram Read Address Load
 
@@ -499,6 +490,8 @@ module DdrTest
     //System Signal
     .SysClk     ( SysClk    ), //System Clock
     .Reset_N    ( Reset_N   ), //System Reset
+    //.read_led   ( read_led  ),
+    //.read_trig  ( read_trig ),
     //Config DDR & AXI Operate Parameter
     .CfgRdAddr  ( CfgRdAddr ), //(I)Config Read Start Address
     .CfgRdBLen  ( CfgRdBLen ), //(I)[DdrOpCtrl]Config Read Burst Length
@@ -546,10 +539,19 @@ module DdrTest
     else if (RdDdrReturnEn)   RdDataMode  <= # TCo_C (~RdDataMode) ;
   end
   
-  wire  [ADW_C-1:0] RamRdDIn    = RdDataMode ? (~RamRdData) : RamRdData;
+ // wire  [ADW_C-1:0] RamRdDIn    = RdDataMode ? (~RamRdData) : RamRdData;
   
   /////////////////////////////////////////////////////////  
+   
+ /* read_data_test 
+  rd_test(
+        .rd_clk (SysClk),
+        .read_trig (R_trig),
+        .read_led (read_led),
+        .RamWrEnd (RamWrEnd)
+);*/
   
+
   DdrRdDataChk 
   # (
       .RIGHT_CNT_WIDTH  ( RIGHT_CNT_WIDTH ),
@@ -560,7 +562,7 @@ module DdrTest
     .SysClk     ( SysClk    ),  //(I)System Clock
     .RdAddrIn   ( RamRdAddr ),  //(I)[DdrRdDataChk]Read Address Input            
     .RdDataEn   ( RamRdDAva ),  //(I)[DdrRdDataChk]DDR Read Data Valid         
-    .DdrRdData  ( RamRdDIn  ),  //(I)[DdrRdDataChk]DDR Read DataOut  
+    .DdrRdData  ( RamRdDIn ),  //(I)[DdrRdDataChk]DDR Read DataOut  
   	.DdrRdError ( TestErr   ),  //(O)[DdrRdDataChk]DDR Prbs Error         
   	.DdrRdRight ( TestRight )   //(O)[DdrRdDataChk]DDR Read Right           
   );
@@ -574,17 +576,22 @@ module DdrTest
   
   always @( posedge SysClk) RamRdDAvaReg  <= # TCo_C RamRdDAva  ; //Axi4 Read Available
   always @( posedge SysClk) RamRdAddrReg  <= # TCo_C RamRdAddr  ; //Axi4 Read Address
-  always @( posedge SysClk) RamRdDataReg  <= # TCo_C RamRdData  ; //Axi4 Read Data
-  
+  always @( posedge SysClk)  begin
+            RamRdDataReg  <= # TCo_C RamRdData  ; //Axi4 Read Data
+           // trig_rd <= 1'b1 ;
+  end 
+     
   always @( posedge SysClk) if(RamRdALoad)  RdStartAReg  <= # TCo_C TestRdStartAddr  ; 
   
   /////////////////////////////////////////////////////////
   assign  AxiRdAva    = RamRdDAvaReg  ; //Axi4 Read Available
+  //assign  read_led    = RamRdDAvaReg  ;
   assign  AxiRdAddr   = RamRdAddrReg  ; //Axi4 Read Address
   assign  AxiRdData   = RamRdDataReg  ; //Axi4 Read Data
   assign  AxiRdStartA = RdStartAReg   ; //Axi4 Read Start Address
   
   assign  AxiRdDMode  = RdDataMode    ; //Axi4 Read DDR End
+  
   
 //3333333333333333333333333333333333333333333333333333333
 
@@ -641,7 +648,10 @@ module DdrTest
         
         if (|WrFirstDCnt)     RdBurstEn <= # TCo_C  1'h0;
         else if (TestWrBusy)  RdBurstEn <= # TCo_C  RamWrEnd;
-        else                  RdBurstEn <= # TCo_C  (RamRdEnd & TestRdBusy) | TesrWrTestEnd;    
+        else                  begin
+        RdBurstEn <= # TCo_C  (RamRdEnd & TestRdBusy) | TesrWrTestEnd;   
+        //read_led  <= 1'b1 ;
+        end 
       end
     endcase
   end

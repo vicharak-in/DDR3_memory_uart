@@ -2,11 +2,27 @@
 `define   Efinity_Debug
 
 module Test_two_design (
-input i_clk,
-input axi_clk,
-input s_data,
-input trig,
-output [255:0] s_out,
+    input i_clk,
+    input axi_clk,
+    input uart_clk,
+    input s_data,
+   // output R_trig,
+    output RD_led ,
+    output last_s_out, 
+   // input rst,
+    output [7:0] test_t_data,
+    output [7:0] test_rd_data,
+    output wr_en,
+    output e_en,
+    output rd_enable,
+    output done,
+  // output ready,
+    output valid,
+   // output [7:0] o_t_data,
+    output [255:0] rd_data,
+   // output [255:0] RD_out ,
+    
+   // output t_data ,
  //Check Resultwire
 `ifdef  Efinity_Debug  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
   input  jtag_inst1_CAPTURE ,
@@ -26,13 +42,13 @@ output [255:0] s_out,
   input           Axi0Clk   , //Axi 0 Channel Clock
   input           Axi1Clk   , //Axi 1 Channel Clock
   input   [ 1:0]  PllLocked , //PLL Locked
- // input  [255:0]  Ram_Wr    ,
-   input           TestStart ,
-                                                 
+ // input           TestStart ,
+   
+    
   //DDR Controner Control Signal
-  output      DdrCtrl_CFG_RST_N          , //(O)[Control]DDR Controner Reset(Low Active)     
-  output      DdrCtrl_CFG_SEQ_RST   , //(O)[Control]DDR Controner Sequencer Reset 
-  output      DdrCtrl_CFG_SEQ_START , //(O)[Control]DDR Controner Sequencer Start 
+  output          DdrCtrl_CFG_RST_N          , //(O)[Control]DDR Controner Reset(Low Active)     
+  output          DdrCtrl_CFG_SEQ_RST   , //(O)[Control]DDR Controner Sequencer Reset 
+  output          DdrCtrl_CFG_SEQ_START , //(O)[Control]DDR Controner Sequencer Start 
   //DDR Controner AXI4 0 Signal
   output  [ 7:0]  DdrCtrl_AID_0     , //(O)[Addres] Address ID
   output  [31:0]  DdrCtrl_AADDR_0   , //(O)[Addres] Address
@@ -60,25 +76,30 @@ output [255:0] s_out,
 
   input   [ 7:0]  DdrCtrl_BID_0     , //(I)[Answer] Response Write ID
   input           DdrCtrl_BVALID_0  , //(I)[Answer] Response valid
-  output          DdrCtrl_BREADY_0  , //(O)[Answer] Response Ready
-  output  [7:0]   LED
+  output          DdrCtrl_BREADY_0   //(O)[Answer] Response Ready
+ // output  [7:0]   LED
 );
 
-//wire trig ;
+wire [255:0] wr_data ;
+//wire [7:0] o_t_data ;
+wire trig_en , c_data;
 
 TOP_DESIGN
     u_1(
         .i_clk (i_clk),
         .axi_clk (axi_clk),
         .data (s_data),
-        .i_trig (trig),
-        .s_out (s_out)
+      //  .i_trig (trig),
+       // .e_wr_flag (wr_empty),
+        .s_out (wr_data),
+        .trig_flag (trig_en)
 );
+
 
 DdrControllerDebug
 c_1(
   //Check Resultwire
-    `ifdef  Efinity_Debug  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+   `ifdef  Efinity_Debug  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
       .jtag_inst1_CAPTURE (jtag_inst1_CAPTURE) ,
       .jtag_inst1_DRCK  (jtag_inst1_DRCK)  ,
       .jtag_inst1_RESET (jtag_inst1_RESET)  ,
@@ -95,14 +116,31 @@ c_1(
       .SysClk  (SysClk)  , //System Clock
       .Axi0Clk  (Axi0Clk) , //Axi 0 Channel Clock
       .Axi1Clk  (Axi1Clk) , //Axi 1 Channel Clock
+      .uart_clk (uart_clk),
       .PllLocked (PllLocked), //PLL Locked
-     // input  [255:0]  Ram_Wr    ,
-       .TestStart (TestStart) ,
-                                                     
-      //DDR Controner Control Signal
-      .DdrCtrl_CFG_RST_N   (DdrCtrl_CFG_RST_N)       , //(O)[Control]DDR Controner Reset(Low Active)     
-      .DdrCtrl_CFG_SEQ_RST (DdrCtrl_CFG_SEQ_RST)  , //(O)[Control]DDR Controner Sequencer Reset 
-      .DdrCtrl_CFG_SEQ_START (DdrCtrl_CFG_SEQ_START) , //(O)[Control]DDR Controner Sequencer Start 
+      .TestStart (trig_en) ,
+
+      .Ram_Wr (wr_data),
+      .Ram_Rd (rd_data),
+     // .read_trig (re_trig) ,
+      
+      //.rst(rst),
+      .w_enable (wr_en) ,
+      .rd_en (rd_enable),
+     // .e_flag (e_en),
+    //  .tx_trig (tx_trig) ,
+      .tx_data (test_t_data) ,
+      .rd_test (test_rd_data),
+      .f_out (last_s_out),
+      .led_1 (RD_led),
+      .t_done (done),
+      .t_valid (valid),
+
+     
+     //DDR Controner Control Signal
+        .DdrCtrl_CFG_RST_N   (DdrCtrl_CFG_RST_N)       , //(O)[Control]DDR Controner Reset(Low Active)     
+        .DdrCtrl_CFG_SEQ_RST (DdrCtrl_CFG_SEQ_RST)  , //(O)[Control]DDR Controner Sequencer Reset 
+        .DdrCtrl_CFG_SEQ_START (DdrCtrl_CFG_SEQ_START) , //(O)[Control]DDR Controner Sequencer Start 
       //DDR Controner AXI4 0 Signal
         .DdrCtrl_AID_0    (DdrCtrl_AID_0) , //(O)[Addres] Address ID
         .DdrCtrl_AADDR_0  (DdrCtrl_AADDR_0) , //(O)[Addres] Address
@@ -130,11 +168,10 @@ c_1(
                        
         .DdrCtrl_BID_0    (DdrCtrl_BID_0) , //(I)[Answer] Response Write ID
         .DdrCtrl_BVALID_0 (DdrCtrl_BVALID_0) , //(I)[Answer] Response valid
-        .DdrCtrl_BREADY_0 (DdrCtrl_BREADY_0) , //(O)[Answer] Response Ready
-       
-      //Other Signal
-       .LED    (LED)    //
+        .DdrCtrl_BREADY_0 (DdrCtrl_BREADY_0)  //(O)[Answer] Response Ready
+
 );
+
 
 
 endmodule

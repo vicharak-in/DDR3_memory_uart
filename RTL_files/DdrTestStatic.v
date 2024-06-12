@@ -1,16 +1,6 @@
 `timescale 100ps/10ps
 
 ////////////////// AxiStat /////////////////////////////
-/**********************************************************
-  Function Description: 
-
-  Establishment : Richard Zhu 
-  Create date   : 2020-01-25 
-  Versions      : V0.1 
-  Revision of records: 
-  Ver0.1
-  
-**********************************************************/
 
 module DdrTestStatic
 # (

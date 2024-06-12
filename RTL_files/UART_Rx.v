@@ -40,7 +40,7 @@
 
 
 /////UART = UNIVERSAL ASYNCHRONOUS RECEIVER TRANSMITTER ////
-//Design name = UART_RX(Reciever Module///
+//Design name = UART_RX(Reciever Module)///
 //Data(ASCII CODE --8 bit) is loaded from PC to FPGA RX pin which is displayed in the form of binary code on led's
 ///Baud RATE = 9600 bps////
 ///CLK_PER_BIT = Fpga_clk (100MHZ)/Baud_rate(9600)/// = 10416

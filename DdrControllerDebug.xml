@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<efx:project name="Test_two_design" description="" last_change="1718080739" sw_version="2023.2.307" last_run_state="crash" last_run_flow="route" config_result_in_sync="true" design_ood="sync" place_ood="sync" route_ood="" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+<efx:project name="Test_two_design" description="" last_change="1718176852" sw_version="2023.2.307" last_run_state="crash" last_run_flow="place" config_result_in_sync="true" design_ood="sync" place_ood="" route_ood="change" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
     <efx:device_info>
         <efx:family name="Trion"/>
         <efx:device name="T120F324"/>
@@ -7,46 +7,45 @@
     </efx:device_info>
     <efx:design_info def_veri_version="verilog_2k" def_vhdl_version="vhdl_2008">
         <efx:top_module name="Test_two_design"/>
-        <efx:design_file name="DdrControllerDebug.v" version="verilog_2k" library="default"/>
-        <efx:design_file name="DdrData.v" version="verilog_2k" library="default"/>
-        <efx:design_file name="Ram2Axi4.v" version="verilog_2k" library="default"/>
-        <efx:design_file name="DdrTest.v" version="verilog_2k" library="default"/>
-        <efx:design_file name="DdrTestStatic.v" version="verilog_2k" library="default"/>
-        <efx:design_file name="debug_top.v" version="verilog_2k" library="default"/>
-        <efx:design_file name="ddr_reset_sequencer.v" version="verilog_2k" library="default"/>
-        <efx:design_file name="ParamDefine.v" version="default" library="default"/>
-        <efx:design_file name="UART_Rx.v" version="default" library="default"/>
-        <efx:design_file name="TOP_DESIGN.v" version="default" library="default"/>
-        <efx:design_file name="UART_Rx_FSM.v" version="default" library="default"/>
-        <efx:design_file name="UART_INTERNAL_FSM.v" version="default" library="default"/>
-        <efx:design_file name="UART_FSM_REG.v" version="default" library="default"/>
-        <efx:design_file name="ASYNCH_FIFO.v" version="default" library="default"/>
-        <efx:design_file name="BRAM_1.v" version="default" library="default"/>
-        <efx:design_file name="synch_rd_pointer_1.v" version="default" library="default"/>
-        <efx:design_file name="synch_wr_pointer_1.v" version="default" library="default"/>
-        <efx:design_file name="wr_pointer_full_1.v" version="default" library="default"/>
-        <efx:design_file name="rd_wr_pointer_full_1.v" version="default" library="default"/>
-        <efx:design_file name="Wr_FSM.v" version="default" library="default"/>
-        <efx:design_file name="Mux_8x1.v" version="default" library="default"/>
-        <efx:design_file name="Test_two_design.v" version="default" library="default"/>
-        <efx:design_file name="UART_TX.v" version="default" library="default"/>
-        <efx:design_file name="UART_TX_FSM.v" version="default" library="default"/>
-        <efx:design_file name="Top_Tx_data.v" version="default" library="default"/>
-        <efx:design_file name="read_data_test.v" version="default" library="default"/>
-        <efx:design_file name="read_mux .v" version="default" library="default"/>
-        <efx:design_file name="sel_count.v" version="default" library="default"/>
-        <efx:design_file name="ASYNCH_FIFO_TX.v" version="default" library="default"/>
-        <efx:design_file name="BRAM_1_tx.v" version="default" library="default"/>
-        <efx:design_file name="synch_rd_pointer_1_tx.v" version="default" library="default"/>
-        <efx:design_file name="synch_wr_pointer_1_tx.v" version="default" library="default"/>
-        <efx:design_file name="wr_pointer_full_1_tx.v" version="default" library="default"/>
-        <efx:design_file name="rd_wr_pointer_full_1_tx.v" version="default" library="default"/>
-        <efx:design_file name="stop_data.v" version="default" library="default"/>
-        <efx:design_file name="connector_tx_reg.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/ddr_reset_sequencer.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/synch_wr_pointer_1_tx.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/rd_wr_pointer_full_1_tx.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/DdrControllerDebug.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/TOP_DESIGN.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/synch_rd_pointer_1.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/connector_tx_reg.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/DdrTestStatic.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/ASYNCH_FIFO_TX.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/UART_TX_FSM.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/rd_wr_pointer_full_1.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/Ram2Axi4.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/DdrData.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/Test_two_design.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/UART_TX.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/wr_pointer_full_1_tx.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/wr_pointer_full_1.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/Top_Tx_data.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/ASYNCH_FIFO.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/synch_rd_pointer_1_tx.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/UART_FSM_REG.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/UART_Rx.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/BRAM_1_tx.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/Wr_FSM.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/ParamDefine.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/UART_INTERNAL_FSM.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/read_data_test.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/sel_count.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/UART_Rx_FSM.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/Mux_8x1.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/synch_wr_pointer_1.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/DdrTest.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/stop_data.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/read_mux.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/debug_top.v" version="default" library="default"/>
+        <efx:design_file name="RTL_files/BRAM_1.v" version="default" library="default"/>
         <efx:top_vhdl_arch name=""/>
     </efx:design_info>
     <efx:constraint_info>
-        <efx:sdc_file name="test_clk.sdc"/>
         <efx:inter_file name=""/>
     </efx:constraint_info>
     <efx:sim_info/>

@@ -1,17 +1,5 @@
 `timescale 100ps/10ps
 
-////////////////// DdrWrCtrl /////////////////////////////
-/**********************************************************
-  Function Description:
-
-  Establishment : Richard Zhu
-  Create date   : 2020-01-09
-  Versions      : V0.1
-  Revision of records:
-  Ver0.1
-
-**********************************************************/
-
 module  DdrWrCtrl
 (
   //System Signal
@@ -317,21 +305,14 @@ endmodule
 
 
 /////////////////// DdrRdCtrl ///////////////////////////////////
-/**********************************************************
-  Function Description:
 
-  Establishment : Richard Zhu
-  Create date   : 2020-01-09
-  Versions      : V0.1
-  Revision of records:
-  Ver0.1
-
-**********************************************************/
 module  DdrRdCtrl
 (
   //System Signal
   SysClk      , //System Clock
   Reset_N     , //System Reset
+ // read_led    ,
+ // read_trig     ,
   //Operate Control & State
   RamRdStart  , //(I)Ram Read Start
   RamRdEnd    , //(O)Ram Read End
@@ -381,7 +362,8 @@ module  DdrRdCtrl
   //System Signal
   input         SysClk    ;     //System Clock
   input         Reset_N   ;     //System Reset
-
+  //output   reg     read_led  ;
+  //input         read_trig  ;
   /////////////////////////////////////////////////////////
   //Operate Control & State
   input               RamRdStart  ; //(I)[DdrRdCtrl]Ram Read Start
@@ -415,7 +397,6 @@ module  DdrRdCtrl
   output              RREADY      ; //(I)[RdData]Read ready. This signal indicates that the master can accept the read data and response information.
   input   [ADW_C-1:0] RDATA       ; //(O)[RdData]Read data.
 
-
   /////////////////////////////////////////////////////////
 
 //1111111111111111111111111111111111111111111111111111111
@@ -445,7 +426,7 @@ module  DdrRdCtrl
   end
 
   wire AddrRdEn = (AddrValid & AddrReady);
-
+  
   /////////////////////////////////////////////////////////
   wire  [ 7:0]  ARID    = AXI_RD_ID     ; //(I)[RdAddr]Read address ID. This signal is the identification tag for the read address group of signals.
   wire  [31:0]  ARADDR  = RdStartAddr   ; //(I)[RdAddr]Read address. The read address gives the address of the first transfer in a read burst transaction.
@@ -589,13 +570,23 @@ module  DdrRdCtrl
   
   always @( posedge SysClk)  RamRdEnd  <= # TCo_C DataRdEn & (~DataRdBusy) ;   //(O)[DdrRdCtrl]Ram Read End
 
-  /////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////
   reg                 RamRdDAva ; //(O)[DdrRdCtrl]Ram Read Available
   reg   [ADW_C-1:0]   RamRdData ; //(O)[DdrRdCtrl]Ram Read Data
   reg   [     31:0]   RamRdAddr ; //(O)[DdrRdCtrl]Ram Read Addrdss
 
-  always @( posedge SysClk)                 RamRdDAva <= # TCo_C DataRdEn   ; //(O)[DdrRdCtrl]Ram Read Available
-  always @( posedge SysClk)  if (DataRdEn)  RamRdData <= # TCo_C DataRdData ; //(O)[DdrRdCtrl]Ram Read Data
+  always @( posedge SysClk) begin      
+        RamRdDAva <= # TCo_C DataRdEn   ; //(O)[DdrRdCtrl]Ram Read Available
+  end
+  
+  
+  always @( posedge SysClk)  begin
+        if (DataRdEn) begin
+            RamRdData <= # TCo_C DataRdData ; //(O)[DdrRdCtrl]Ram Read Data 
+         end
+  end
+        
+  
   always @( posedge SysClk)  if (DataRdEn)  RamRdAddr <= # TCo_C RdAddrCnt  ; //(O)[DdrRdCtrl]Ram Read Addrdss
 
 

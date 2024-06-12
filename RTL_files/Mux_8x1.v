@@ -1,13 +1,18 @@
-
 module Mux_8x1(
   input clk,          // Clock signal
   input rst,              // Reset signal
   input [31:0] input_data,  // Input 32-bit data
   output [255:0] register ,  // Eight 32-bit registers
-  input i_count 
+  input i_count ,
+  output [31:0] test_reg,
+  output reg check_data 
   );
-
+ 
+  //reg [31:0] mem_data = 0; 
   
+  //assign mem_data = mem_reg[0] ;
+ 
+  assign  test_reg = mem_reg[0] ;
   reg [31:0] mem_reg [7:0] ;
   reg [7:0] input_data_count = 0;    // Counter to track input data index
   //reg [2:0] register_index = 0; // Counter to track register index
@@ -33,11 +38,7 @@ always @(posedge i_count) begin
     
     else
         input_data_count <= input_data_count + 1;
-           
-        
-  /* if (input_data_count == 3) begin
-        input_data_count <= 1;
-    end*/
+                 
 end
 
 always@(posedge clk)
@@ -52,6 +53,7 @@ begin
              if(input_data_count == 6) begin
                 mem_reg[0] <= input_data;
                 state <= s_data;
+                check_data <= 1'b0 ;
              end
              else
                 state <= f_data;
@@ -114,6 +116,7 @@ begin
            e_data : begin
              if(input_data_count == 34) begin
                 mem_reg[7] <= input_data;
+                check_data <= 1'b1 ;
                 state <= stop_data;
              end
              else
