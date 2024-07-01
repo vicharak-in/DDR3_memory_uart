@@ -2,6 +2,13 @@
 
 This README provides detailed information about the DDR design and debugging procedures. In this design, data passes through UART Rx to the DDR debug controller and then to UART Tx. A manual debugger is used to debug the entire design.
 
+-- The example here, automatically starts address of DDR from 0x1000 and feeds data into DDR3.
+-- Current example uses AXI-256 bit bus from the Efinix, so all of UART-RX data being received, will be packed until it has 32 bytes and then it will be feed into DDR with a write command. 
+-- Current design only feeds data 32 bytes so you will have to make sure to pack data in a manner into users design
+-- Address will be automatically added by 32, into DDR write cycle.
+
+-- After it writes, 32 bytes into DDR, the current example will initiate a read command from DDR and will receive 32 bytes from AXI-256 channel, which will be transmitted to UART-TX Automatically.
+
 ## Testing Setup
 
 - **UART Rx Baudrate**: 115200, UART Rx clock: 100MHz.
