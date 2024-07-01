@@ -1,7 +1,9 @@
+`timescale 1ns / 1ps
+///////////////////////////////////////////////////////////////////////////////////////
 `define   Test_AXI0
 `define   Efinity_Debug
 
-module Test_two_design (
+module Test_two_design  (
     input i_clk,
     input axi_clk,
     input uart_clk,
@@ -9,7 +11,8 @@ module Test_two_design (
    // output R_trig,
     output RD_led ,
     output last_s_out, 
-   // input rst,
+  //  input rst,
+    input trig,
     output [7:0] test_t_data,
     output [7:0] test_rd_data,
     output wr_en,
@@ -18,9 +21,10 @@ module Test_two_design (
     output done,
   // output ready,
     output valid,
+    output trig_en,
    // output [7:0] o_t_data,
     output [255:0] rd_data,
-   // output [255:0] RD_out ,
+   // output [255:0] wr_data,
     
    // output t_data ,
  //Check Resultwire
@@ -43,6 +47,7 @@ module Test_two_design (
   input           Axi1Clk   , //Axi 1 Channel Clock
   input   [ 1:0]  PllLocked , //PLL Locked
  // input           TestStart ,
+ 
    
     
   //DDR Controner Control Signal
@@ -79,12 +84,15 @@ module Test_two_design (
   output          DdrCtrl_BREADY_0   //(O)[Answer] Response Ready
  // output  [7:0]   LED
 );
-
 wire [255:0] wr_data ;
 //wire [7:0] o_t_data ;
 wire trig_en , c_data;
+wire  [ 7:0]  blen ;
+wire trig_ddr ;
+reg [7:0] blen_out = 8'h00 ;
+//assign blen = blen_out ;
 
-TOP_DESIGN
+/*TOP_DESIGN
     u_1(
         .i_clk (i_clk),
         .axi_clk (axi_clk),
@@ -94,11 +102,30 @@ TOP_DESIGN
         .s_out (wr_data),
         .trig_flag (trig_en)
 );
+*/
 
+TOP_DESIGN
+T_1(
+    .i_clk (i_clk),
+    .axi_clk (axi_clk),
+   // input i_rst,
+    .data (s_data),
+    //.rst (rst),
+    .i_trig (trig),
+  //  output e_wr_flag ,
+   // .rdata_fifo (wr_data),
+    .rdata_fifo (wr_data),
+    .mux_reg_data (),
+    .alen_fifo(blen_out),
+    .ddr_trig(trig_ddr),
+    .wready_rx(DdrCtrl_WREADY_0),
+    .trig_en (trig_en) 
+    //.trig_flag (trig_en)
+);
 
-DdrControllerDebug
-c_1(
-  //Check Resultwire
+DdrControllerDebug  
+ c_1(
+  //Check Resultwire 
    `ifdef  Efinity_Debug  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
       .jtag_inst1_CAPTURE (jtag_inst1_CAPTURE) ,
       .jtag_inst1_DRCK  (jtag_inst1_DRCK)  ,
@@ -118,8 +145,8 @@ c_1(
       .Axi1Clk  (Axi1Clk) , //Axi 1 Channel Clock
       .uart_clk (uart_clk),
       .PllLocked (PllLocked), //PLL Locked
-      .TestStart (trig_en) ,
-
+      .TestStart (trig_ddr) ,
+      .CfgBurstLen (blen), 
       .Ram_Wr (wr_data),
       .Ram_Rd (rd_data),
      // .read_trig (re_trig) ,

@@ -27,6 +27,7 @@ module  DdrControllerDebug
   output          f_out,
   output [7:0]    tx_data ,
   output [7:0]    rd_test ,
+  output [ 7:0]  CfgBurstLen ,
  // input           rst,
   output          w_enable,
   output          e_flag ,
@@ -246,7 +247,7 @@ module  DdrControllerDebug
   /////////////////////////////////////////////////////////
   wire  [ 1:0]  CfgDataMode   ; //(I)Config Test Data Mode 0: Normal 1:Reverse 2,3:Normal&Revers Alternate 
   wire  [ 1:0]  CfgTestMode   ; //(I)Test Mode: 1:Read Only;2:Write Only;3:Write/Read alternate
-  wire  [ 7:0]  CfgBurstLen   ; //(I)Config Burst Length;
+  //wire  [ 7:0]  CfgBurstLen   ; //(I)Config Burst Length;
   wire  [31:0]  CfgStartAddr  ; //(I)Config Start Address
   wire  [31:0]  CfgEndAddr    ; //(I)Config End Address
   wire  [31:0]  CfgTestLen    ; //(I)Cinfig Test Length
@@ -283,10 +284,10 @@ module  DdrControllerDebug
     .SysClk       ( Axi0Clk           ), //(O)System Clock
     .Reset_N      ( Axi0Rst_N         ), //(I)System Reset (Low Active)
    
-    .RamWrData    ( Ram_Wr            ),
+    .RamWrDOut    ( Ram_Wr            ),
     .RamRdData    ( Ram_Rd            ),
-   // .read_trig    ( read_trig         ),
-    //.R_trig    ( R_trig       ),
+   // .read_trig    ( read_trig       ),
+    //.R_trig     ( R_trig       ),
    // .r_data      (r_data),
     //Test Configuration & State      
     .CfgTestMode  ( CfgTestMode       ), //(I)Test Mode: 1:Read Only;2:Write Only;3:Write/Read alternate
@@ -295,7 +296,7 @@ module  DdrControllerDebug
     .CfgEndAddr   ( CfgEndAddr        ), //(I)Config End Address
     .CfgTestLen   ( CfgTestLen        ), //(I)Cinfig Test Length
     .CfgDataMode  ( CfgDataMode       ), //Config Test Data Mode 0: Nomarl 1:Reverse
-    .TestStart    ( TestStart      ), //(I)Test Start Control
+    .TestStart    ( TestStart        ), //(I)Test Start Control
     //Test State  & Result            
     .TestBusy     ( TestBusy          ), //(O)Test Busy State
     .TestErr      ( TestErr           ), //(O)Test Data Error
@@ -305,7 +306,7 @@ module  DdrControllerDebug
     .AxiWrEn      ( AxiWrEn           ), //Axi4 Write Enable
     .AxiWrAddr    ( AxiWrAddr         ), //Axi4 Write Address
     .AxiWrData    ( AxiWrData         ), //Axi4 Write Data
-   // .AxiWrData    ( s_out         ), //Axi4 Write Data
+
     .AxiRdStartA  ( AxiRdStartA       ), //Axi4 Read Start Address
     .AxiRdAva     ( AxiRdAva          ), //Axi4 Read Available
     .AxiRdAddr    ( AxiRdAddr         ), //Axi4 Read Address
@@ -345,13 +346,63 @@ module  DdrControllerDebug
 wire trig_read ;
 wire [4:0] c_trig ;
 wire trig_r ;
+wire [9:0] fifo_data_count ;
+wire [255:0] AxiData;
+wire empty_fifo ;
+wire rst_fifo ;
+assign rst_fifo = 1'b0 ;
+
+Wr_en_tx_ctrl 
+Wr_en_tx_inst(
+    .clk (Axi0Clk),
+    .rst(1'b1),
+    .rd_valid(Axi_RVALID),
+    //.alen(CfgBurstLen),
+    .wr_en_tx(fifo_wr_en)
+);
+
+sync_fifo_store 
+sync_fifo_store_1(
+    .full_o (),
+    .empty_o (empty_fifo),
+    .clk_i (Axi0Clk),
+    .wr_en_i (fifo_wr_en),
+    .rd_en_i (fifo_rd_en),
+    .wdata (AxiRdData),
+    .datacount_o (fifo_data_count),
+    .rst_busy (),
+    .rdata (AxiData),
+    .rvalid (),
+    .a_rst_i (rst_fifo)
+);
+
+rd_en_tx_ctrl
+rd_en_tx_ctrl_inst(
+    .i_clk(Axi0Clk),
+    .rst(1'b1),
+    .e_flag_fifo(empty_fifo),       //read fifo of 256 bits after ddr
+    .empty_fifo_tx(e_flag),     // read fifo of UART Tx side 
+    .led_response(R_trig),
+    .conveter_response(convert_led),
+    .mux_response(mux_trig),
+    .read_en(fifo_rd_en)
+);
+
+/*rd_en_ctrl_tx
+rd_en_ctrl_inst(
+    .clk(Axi0Clk),
+    .rst(TestStart), 
+    .rd_occupants(fifo_data_count), 
+    .rd_en_tx(fifo_rd_en),
+    .blen_rd(CfgBurstLen)
+);*/
 
 
 en_pass 
 en_pass_inst(
     .clk (Axi0Clk),
-    .reset (TestStart),
-    .d_pass_out (AxiRdData),
+    .reset (1'b1),
+    .d_pass_out (AxiData),
     .count_data (c_trig)
 );
 
@@ -365,17 +416,18 @@ en_test_inst(
   r_1 (
        .clk (Axi0Clk) ,        // Clock signal
        .reset (trig_r),      // Reset signal
-       .data_in (AxiRdData), // 256-bit data input
+       .data_in (AxiData), // 256-bit data input
        .data_out (RD_out) ,
        .r_led (led_1) ,      
        .trigger (R_trig)    // External trigger signal     
 );
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////  
+///////////////////TestStart///////////////////////////////////////////////////////////////////////////////////////  
   convert_data 
   c_d(
     .Axi0Clk (Axi0Clk),
     .input_data (RD_out),
+    .convert_led(convert_led),
     . R0  (w0),
     . R1  (w1),
     . R2  (w2),
@@ -411,11 +463,14 @@ en_test_inst(
 
 );
  
+ wire mux_trig ;
+ wire convert_led ;
 t_mux 
 t_m_1(
     .clk (Axi0Clk),
     .rst (trig_r),
     .i_sel(m_sel),
+    .mux_data(mux_trig),
     .i_R0 (w0),
     .i_R1 (w1),
     .i_R2 (w2),
@@ -461,7 +516,7 @@ s_1(
 
 
 Top_Tx_data 
-tx_1(
+tx_1 (
     .Axi0Clk (Axi0Clk),
     .uart_clk (uart_clk) ,
     .rst (trig_r) ,
@@ -1058,9 +1113,10 @@ tx_1(
     wire              DdrTest_TestStart               ;
   //  wire  [31:0]      rd_data                       ;
     
- /* edb_top edb_top_inst (
+ edb_top edb_top_inst (
   ////////////////
-    .bscan_CAPTURE        ( jtag_inst1_CAPTURE  ),
+    .bscan_CAPTURE        ( jtag_inst1_CAPTURE  ),  //  wire  [31:0]      rd_data                       ;
+
     .bscan_DRCK           ( jtag_inst1_DRCK     ),
     .bscan_RESET          ( jtag_inst1_RESET    ),
     .bscan_RUNTEST        ( jtag_inst1_RUNTEST  ),
@@ -1118,6 +1174,10 @@ tx_1(
     .Axi_RDATA_191_160    ( Axi_RDATA_191_160   ),
     .Axi_RDATA_223_192    ( Axi_RDATA_223_192   ),
     .Axi_RDATA_255_224    ( Axi_RDATA_255_224   ),
+    .Axi_AxiData          ( AxiData             ),
+    .Axi_AxiRdData        ( AxiRdData           ),
+    .Axi_wr_en_i          ( fifo_wr_en          ),
+    .Axi_rd_en_i          ( fifo_rd_en          ),
  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
     .rd_led_la_clk       (Axi_clk),
@@ -1130,10 +1190,10 @@ tx_1(
     .rd_led_la_tx_valid  (t_valid),
     .rd_led_la_e_flag    (e_flag),
     //.test_led_clk        (Axi_clk),
- // .rd_led_la_cnt       (i_cnt) ,
+   // .rd_led_la_cnt       (i_cnt) ,
     .rd_led_la_RD_out    (RD_out),  
   //.rd_led_la_rd_tx_out (rd_test) ,
- // .rd_led_la_tx_out_data (tx_data),
+  // .rd_led_la_tx_out_data (tx_data),
     .rd_led_la_mout_data (mout_data),  
     .rd_led_la_Ram_Rd    (Ram_Rd),
 
@@ -1197,9 +1257,9 @@ tx_1(
     .DdrTest_CfgStartAddr           ( DdrTest_CfgStartAddr            ),
     .DdrTest_CfgEndAddr             ( DdrTest_CfgEndAddr              ),
     .DdrTest_CfgTestLen             ( DdrTest_CfgTestLen              )
-  //  .DdrTest_TestStart              ( DdrTest_TestStart               )
- );*/
-                                           
+    //.DdrTest_TestStart            ( DdrTest_TestStart               )
+ );
+                                        
   //////////////////////////////////////////////////////////////////////////////////////
   
   //assign  TestStart     = DdrTest_TestStart  ;
@@ -1210,11 +1270,20 @@ tx_1(
   assign  CfgStartAddr  = DdrTest_CfgStartAddr  ;
   assign  CfgEndAddr    = DdrTest_CfgEndAddr    ;
   assign  CfgTestLen    = DdrTest_CfgTestLen    ;
+  
+/*  //assign  TestStart     = DdrTest_TestStart  ;
+  assign  DdrResetCtrl  = 1'h0      ;
+  assign  CfgDataMode   = 2'h3   ;
+  assign  CfgTestMode   = 2'h3   ;
+  assign  CfgBurstLen   = 8'h2   ;
+  assign  CfgStartAddr  = 1000  ;
+  assign  CfgEndAddr    = 1000   ;
+  assign  CfgTestLen    = 32'h100    ;*/
                                                      
 `else //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
   //Use Simulation
   /////////////////////////////////////////////////////////
-  /*reg   TestBusyReg = 1'h0;
+  reg   TestBusyReg = 1'h0;
   reg   TestEndFlag = 1'h0;
   
   always @( posedge Axi0Clk)  TestBusyReg  <= # TCo_C TestBusy;
@@ -1242,14 +1311,14 @@ tx_1(
   end
   
   /////////////////////////////////////////////////////////
-  assign  TestStart     = TestStartFlag ;
+  //assign  TestStart     = TestStartFlag ;
   assign  DdrResetCtrl  =  1'h0         ;
   assign  CfgDataMode   =  2'h3         ;
   assign  CfgTestMode   = ModeSelCnt    ;
   assign  CfgBurstLen   =  8'h3         ;
   assign  CfgStartAddr  = 32'h0         ;
   assign  CfgEndAddr    = 32'hff_ff     ;
-  assign  CfgTestLen    = 32'h100       ;*/
+  assign  CfgTestLen    = 32'h100       ;
 
   `endif  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
