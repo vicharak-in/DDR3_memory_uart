@@ -17,7 +17,13 @@
 // Revision 0.01 - File Created
 // Additional Comments:
 // 
-//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// This module contains the top module of the receiver side.  This module takes the data 
+// from uart receiver serially, and write into fifo, after that, the data is read from fifo 
+// and then write the data into ddr dramto write into it.
+////////////////////////////////////////////////////////////////////////////////////////////
 
 
 module TOP_DESIGN(
@@ -27,14 +33,14 @@ module TOP_DESIGN(
     input data,
     input i_trig,
   //  output e_wr_flag ,
-    output [255:0] rdata_fifo,
+    output [255:0] s_out,
     output [31:0] mux_reg_data,
     input [7:0] alen_fifo ,
-    output ddr_trig,
+    //output ddr_trig,
     output wr_en_trig ,
     input wready_rx,
-    output trig_en 
-   // output trig_flag
+    output trig_en, 
+    output trig_flag
 );
 
 
@@ -42,7 +48,7 @@ wire r_valid ;
 wire f_full, wr_en, e_wr_flag, read_en ;
 wire tx_done, tx_rdy, tx_valid ;
 wire [7:0] o_data1 , o_data2, o_data3;
-wire [31:0] o_data4;
+wire [255:0] o_data4;
 wire  cnt;
 wire rst ; 
 assign rst = 1'b0 ;
@@ -50,7 +56,7 @@ wire [9:0] occupant_count ;
 wire trig_flag ;
 //wire wr_en_trig ;
 wire fifo_r_en ;
-wire [255:0] s_out ;
+//wire [255:0] s_out ;
 //reg [7:0] alen_fifo = 8'h00 ;
 
 UART_Rx
@@ -91,25 +97,6 @@ fifo_1(
     .a_rst_i(rst)
 );
 
-/*ASYNCH_FIFO
-    fifo_1(
-         .i_WCLK(i_clk) , 
-         .i_write_en(wr_en) , 
-        // .i_wrstn(i_rst)  , 
-         .i_wrstn(1'b1)  , 
-         .i_WDATA(o_data2) , 
-         .o_fifo_full() , 
-         .o_fifo_almst_full(f_full) ,
-        
-         .i_RCLK(axi_clk) , 
-         .i_read_en(read_en) ,
-        // .i_rrstn(i_rst) ,
-         .i_rrstn(1'b1) ,
-         .o_RDATA(o_data3),
-         .o_fifo_empty(e_wr_flag) 
-        // .o_FIFO_CNT_WR(w_cnt) 
-        // .o_FIFO_CNT_RD(r_cnt)  
-);*/
 
 Wr_FSM 
     fsm_shift(
@@ -120,24 +107,14 @@ Wr_FSM
         .read_en (read_en),
         .i_data (o_data3),
         .dout1 (o_data4),
-        .count (cnt)
-);
-
-Mux_8x1
-    m_1(
-        .clk(axi_clk),
-        .rst(1'b1),
-        .input_data(o_data4),
+        .count (cnt),
         .register (s_out),
-        .i_count (cnt),
-        .test_reg (mux_reg_data),
-       // .alen (alen_fifo),
-        .input_data_count (count_en),
         .check_data (trig_flag)
 );
+
 wire [7:0] count_en  ;
 wire wr_en_trig ;
-
+/*
 Wr_en_rx_ctrl
 Wr_en_ctrl_inst(
     .clk(axi_clk),
@@ -161,7 +138,7 @@ sync_fifo_store_inst(
     .rvalid (trig_en),
     .a_rst_i (rst)
 );
-
+/*
 rd_Rx_ctrl 
 rd_Rx_ctrl_inst(
     .clk (axi_clk),
@@ -172,5 +149,5 @@ rd_Rx_ctrl_inst(
     .storage_flag  (ddr_trig),
     .rd_en_rx  (fifo_r_en) 
 );
-
+*/
 endmodule

@@ -1,0 +1,454 @@
+{
+    "debug_cores": [
+        {
+            "name": "la0",
+            "type": "la",
+            "uuid": "c5a5f8c52b0142b791106f6e17fa2dba",
+            "trigin_en": false,
+            "trigout_en": false,
+            "auto_inserted": true,
+            "capture_control": true,
+            "data_depth": 1024,
+            "input_pipeline": 1,
+            "probes": [
+                {
+                    "name": "DdrCtrl_AVALID_0",
+                    "width": 1,
+                    "probe_type": 1
+                },
+                {
+                    "name": "T_1/FSM_1/WRITE_CNT",
+                    "width": 10,
+                    "probe_type": 1
+                },
+                {
+                    "name": "T_1/fsm_shift/rd_en_cnt",
+                    "width": 7,
+                    "probe_type": 1
+                },
+                {
+                    "name": "T_1/fsm_shift/READ_CNT",
+                    "width": 10,
+                    "probe_type": 1
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "command": "add_ports",
+            "id": 1,
+            "args": {
+                "netlist": "Test_two_design",
+                "ports": [
+                    {
+                        "name": "jtag_inst3_CAPTURE",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst3_DRCK",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst3_RESET",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst3_RUNTEST",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst3_SEL",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst3_SHIFT",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst3_TCK",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst3_TDI",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst3_TMS",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst3_UPDATE",
+                        "dir": "in",
+                        "width": 1
+                    },
+                    {
+                        "name": "jtag_inst3_TDO",
+                        "dir": "out",
+                        "width": 1
+                    }
+                ]
+            }
+        },
+        {
+            "command": "instantiate",
+            "netlist": "edb_top",
+            "id": 2,
+            "instance": "edb_top_inst"
+        },
+        {
+            "command": "connect",
+            "id": 3,
+            "args": {
+                "instance": "edb_top_inst",
+                "ports": [
+                    {
+                        "name": "bscan_CAPTURE",
+                        "net": "jtag_inst3_CAPTURE"
+                    },
+                    {
+                        "name": "bscan_DRCK",
+                        "net": "jtag_inst3_DRCK"
+                    },
+                    {
+                        "name": "bscan_RESET",
+                        "net": "jtag_inst3_RESET"
+                    },
+                    {
+                        "name": "bscan_RUNTEST",
+                        "net": "jtag_inst3_RUNTEST"
+                    },
+                    {
+                        "name": "bscan_SEL",
+                        "net": "jtag_inst3_SEL"
+                    },
+                    {
+                        "name": "bscan_SHIFT",
+                        "net": "jtag_inst3_SHIFT"
+                    },
+                    {
+                        "name": "bscan_TCK",
+                        "net": "jtag_inst3_TCK"
+                    },
+                    {
+                        "name": "bscan_TDI",
+                        "net": "jtag_inst3_TDI"
+                    },
+                    {
+                        "name": "bscan_TMS",
+                        "net": "jtag_inst3_TMS"
+                    },
+                    {
+                        "name": "bscan_UPDATE",
+                        "net": "jtag_inst3_UPDATE"
+                    },
+                    {
+                        "name": "bscan_TDO",
+                        "net": "jtag_inst3_TDO"
+                    },
+                    {
+                        "name": "la0_clk",
+                        "net": "axi_clk",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe0",
+                        "net": "DdrCtrl_AVALID_0",
+                        "path": []
+                    },
+                    {
+                        "name": "la0_probe1[0]",
+                        "net": "WRITE_CNT[0]",
+                        "path": [
+                            "T_1",
+                            "FSM_1"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe1[1]",
+                        "net": "WRITE_CNT[1]",
+                        "path": [
+                            "T_1",
+                            "FSM_1"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe1[2]",
+                        "net": "WRITE_CNT[2]",
+                        "path": [
+                            "T_1",
+                            "FSM_1"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe1[3]",
+                        "net": "WRITE_CNT[3]",
+                        "path": [
+                            "T_1",
+                            "FSM_1"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe1[4]",
+                        "net": "WRITE_CNT[4]",
+                        "path": [
+                            "T_1",
+                            "FSM_1"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe1[5]",
+                        "net": "WRITE_CNT[5]",
+                        "path": [
+                            "T_1",
+                            "FSM_1"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe1[6]",
+                        "net": "WRITE_CNT[6]",
+                        "path": [
+                            "T_1",
+                            "FSM_1"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe1[7]",
+                        "net": "WRITE_CNT[7]",
+                        "path": [
+                            "T_1",
+                            "FSM_1"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe1[8]",
+                        "net": "WRITE_CNT[8]",
+                        "path": [
+                            "T_1",
+                            "FSM_1"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe1[9]",
+                        "net": "WRITE_CNT[9]",
+                        "path": [
+                            "T_1",
+                            "FSM_1"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe2[0]",
+                        "net": "rd_en_cnt[0]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe2[1]",
+                        "net": "rd_en_cnt[1]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe2[2]",
+                        "net": "rd_en_cnt[2]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe2[3]",
+                        "net": "rd_en_cnt[3]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe2[4]",
+                        "net": "rd_en_cnt[4]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe2[5]",
+                        "net": "rd_en_cnt[5]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe2[6]",
+                        "net": "rd_en_cnt[6]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe3[0]",
+                        "net": "READ_CNT[0]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe3[1]",
+                        "net": "READ_CNT[1]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe3[2]",
+                        "net": "READ_CNT[2]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe3[3]",
+                        "net": "READ_CNT[3]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe3[4]",
+                        "net": "READ_CNT[4]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe3[5]",
+                        "net": "READ_CNT[5]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe3[6]",
+                        "net": "READ_CNT[6]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe3[7]",
+                        "net": "READ_CNT[7]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe3[8]",
+                        "net": "READ_CNT[8]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    },
+                    {
+                        "name": "la0_probe3[9]",
+                        "net": "READ_CNT[9]",
+                        "path": [
+                            "T_1",
+                            "fsm_shift"
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "vdbs": [
+        {
+            "file": "debug_top.post.vdb",
+            "instance": "edb_top_inst"
+        }
+    ],
+    "session": {
+        "wizard": {
+            "data_depth": 1024,
+            "capture_control": true,
+            "selected_nets": [
+                {
+                    "name": "DdrCtrl_AVALID_0",
+                    "width": 1,
+                    "clk_domain": "axi_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "WRITE_CNT",
+                    "width": 10,
+                    "clk_domain": "axi_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "T_1",
+                        "FSM_1"
+                    ],
+                    "net_idx_left": 9,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "rd_en_cnt",
+                    "width": 7,
+                    "clk_domain": "axi_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "T_1",
+                        "fsm_shift"
+                    ],
+                    "net_idx_left": 6,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "READ_CNT",
+                    "width": 10,
+                    "clk_domain": "axi_clk",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [
+                        "T_1",
+                        "fsm_shift"
+                    ],
+                    "net_idx_left": 9,
+                    "net_idx_right": 0
+                }
+            ],
+            "top_module": "Test_two_design",
+            "db_checksum": "ba5fce12098a2c03e7bae2e9a172d1842464edfca8e284870b3519e987537970",
+            "src": "elaborate",
+            "jtag_user": "USER3",
+            "input_pipeline": 1
+        }
+    }
+}

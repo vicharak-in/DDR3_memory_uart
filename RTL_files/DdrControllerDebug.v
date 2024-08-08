@@ -1,7 +1,7 @@
 `timescale 100ps/10ps
 
 `define   Test_AXI0
-`define   Efinity_Debug
+//`define   Efinity_Debug
 
 module  DdrControllerDebug
 (
@@ -28,7 +28,7 @@ module  DdrControllerDebug
   output [7:0]    tx_data ,
   output [7:0]    rd_test ,
   output [ 7:0]  CfgBurstLen ,
- // input           rst,
+  input           rst,
   output          w_enable,
   output          e_flag ,
   output          rd_en,
@@ -36,14 +36,14 @@ module  DdrControllerDebug
   output          t_valid,
   output          i_cnt , 
  // output          read_trig,
- 
+ output reg DONE ,
   input   [ 1:0]  PllLocked , //PLL Locked
   input  [255:0]  Ram_Wr    ,
 
   output  [255:0] Ram_Rd    ,
   input           TestStart ,
   output          led_1 ,
-  
+  output DONE_OUT,
   //output              R_trig ,
   //DDR Controner Control Signal
   output      DdrCtrl_CFG_RST_N          , //(O)[Control]DDR Controner Reset(Low Active)     
@@ -351,7 +351,7 @@ wire [255:0] AxiData;
 wire empty_fifo ;
 wire rst_fifo ;
 assign rst_fifo = 1'b0 ;
-
+/*
 Wr_en_tx_ctrl 
 Wr_en_tx_inst(
     .clk (Axi0Clk),
@@ -360,7 +360,8 @@ Wr_en_tx_inst(
     //.alen(CfgBurstLen),
     .wr_en_tx(fifo_wr_en)
 );
-
+*/
+/*
 sync_fifo_store 
 sync_fifo_store_1(
     .full_o (),
@@ -375,7 +376,7 @@ sync_fifo_store_1(
     .rvalid (),
     .a_rst_i (rst_fifo)
 );
-
+/*
 rd_en_tx_ctrl
 rd_en_tx_ctrl_inst(
     .i_clk(Axi0Clk),
@@ -387,7 +388,7 @@ rd_en_tx_ctrl_inst(
     .mux_response(mux_trig),
     .read_en(fifo_rd_en)
 );
-
+*/
 /*rd_en_ctrl_tx
 rd_en_ctrl_inst(
     .clk(Axi0Clk),
@@ -397,12 +398,12 @@ rd_en_ctrl_inst(
     .blen_rd(CfgBurstLen)
 );*/
 
-
+/*
 en_pass 
 en_pass_inst(
     .clk (Axi0Clk),
     .reset (1'b1),
-    .d_pass_out (AxiData),
+    .d_pass_out (Ram_Rd),
     .count_data (c_trig)
 );
 
@@ -416,7 +417,7 @@ en_test_inst(
   r_1 (
        .clk (Axi0Clk) ,        // Clock signal
        .reset (trig_r),      // Reset signal
-       .data_in (AxiData), // 256-bit data input
+       .data_in (Ram_Rd), // 256-bit data input
        .data_out (RD_out) ,
        .r_led (led_1) ,      
        .trigger (R_trig)    // External trigger signal     
@@ -427,7 +428,7 @@ en_test_inst(
   c_d(
     .Axi0Clk (Axi0Clk),
     .input_data (RD_out),
-    .convert_led(convert_led),
+   // .convert_led(convert_led),
     . R0  (w0),
     . R1  (w1),
     . R2  (w2),
@@ -470,7 +471,7 @@ t_m_1(
     .clk (Axi0Clk),
     .rst (trig_r),
     .i_sel(m_sel),
-    .mux_data(mux_trig),
+  //  .mux_data(mux_trig),
     .i_R0 (w0),
     .i_R1 (w1),
     .i_R2 (w2),
@@ -530,6 +531,20 @@ tx_1 (
     .rd_tx(rd_en),
     .f_tx_out (f_out)
 );
+*/
+
+TOP_DESIGN_TX
+ top_TX1(
+     .uart_clk(uart_clk) ,     
+     .AXI_clk(Axi0Clk) , 
+     .i_rst(rst) ,  
+     .rvalid_tx(DdrCtrl_RVALID_0),
+    //rready_tx(DdrCtrl_RREADY_0),
+     .data_in(Ram_Rd),
+     .tx_out(rd_test),
+     .done_tx(t_done),
+     .tx_serial_en(f_out)    
+ );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1311,15 +1326,50 @@ tx_1 (
   end
   
   /////////////////////////////////////////////////////////
+
+  
   //assign  TestStart     = TestStartFlag ;
   assign  DdrResetCtrl  =  1'h0         ;
-  assign  CfgDataMode   =  2'h3         ;
-  assign  CfgTestMode   = ModeSelCnt    ;
-  assign  CfgBurstLen   =  8'h3         ;
-  assign  CfgStartAddr  = 32'h0         ;
-  assign  CfgEndAddr    = 32'hff_ff     ;
-  assign  CfgTestLen    = 32'h100       ;
+  assign  CfgDataMode   =  2'h0         ;
+  assign  CfgTestMode   = 2'h3    ;
+  assign  CfgBurstLen   =  8'h0         ;
+  assign  CfgStartAddr  = 32'h00001000        ;
+  assign  CfgEndAddr    = 32'h00001000   ;
+  assign  CfgTestLen    = 32'h1       ;
+
 
   `endif  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
+  
+ ////////////////////////////////////////////////////////////////////////////////////////////
+ /* This part of the logic is for the feedback signal. Whenever the first data
+    is transmitted the next data has to be read and move to the ddr again. 
+ */
+ /////////////////////////////////////////////////////////////////////////////////////////////
+       reg [7:0] done_cnt = 0 ;
+     always@(posedge t_done) begin
+         if (~rst)
+             done_cnt <= 0;
+          else if (done_cnt == 32)   //Whenever the 32 bytes get transmitted, it should get back to 1.
+              done_cnt <= 8'd1 ;
+          else if(~TestStart)
+               done_cnt <= done_cnt ;
+          else 
+              done_cnt <= done_cnt + 1;
+     end
+
+  always@(posedge Axi0Clk) begin
+       if (done_cnt == 32) begin
+           DONE = 1'b1 ;            //Whenever the 32 bytes get transmitted, THe DONE signal becomes one and acts as feedback.
+           end
+        else begin
+             DONE = 1'b0 ;
+        end
+  end
+   reg [1:0]DONE_DELAY_REG = 0;
+always@(posedge Axi0Clk) begin      // Here, we are taking a single pulse for feedback, so we use delay registers.
+    DONE_DELAY_REG[0] <= DONE ;
+    DONE_DELAY_REG[1] <= DONE_DELAY_REG[0] ;
+end
+assign DONE_OUT = DONE & ~DONE_DELAY_REG[1] ;
 endmodule

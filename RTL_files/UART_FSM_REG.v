@@ -26,7 +26,7 @@ input [`D_WIDTH-1:0]  i_data ,
 input i_clk , 
 input i_rst , 
 input i_enable , 
-output [`D_WIDTH-1:0] o_data 
+output [7:0] o_data 
     );
 
 reg [`D_WIDTH-1:0] o_reg = 0;

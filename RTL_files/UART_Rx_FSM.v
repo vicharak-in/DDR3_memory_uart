@@ -54,4 +54,15 @@ output [7:0] o_rx_data
         .i_enable(en_reg) , 
         .o_data(o_rx_data) 
     );
+    
+     reg [9:0] WRITE_CNT = 0 ;
+     always@(posedge i_clk) begin
+         if (~i_rstn)
+             WRITE_CNT <= 0;
+          else if(o_wren_fifo)
+              WRITE_CNT <= WRITE_CNT + 1;
+           else
+              WRITE_CNT <= WRITE_CNT ;
+     end
+    
 endmodule

@@ -1,4 +1,4 @@
-`define DAT_W  8 
+`define DAT_W  256 
 module wr_pointer_full_1_tx
 ( input i_wr_clk , 
   input i_wr_en , 
@@ -20,10 +20,10 @@ module wr_pointer_full_1_tx
   wire o_full ;
   wire o_full_allmost ;
   
-  reg [8:0] WRPTR = 0;
+  reg [9:0] WRPTR = 0;
   reg FULL_FLAG = 0;
   reg ALLMOST_FULL_FLAG = 0;
-  reg [7:0] COUNTER = 0;
+  reg [9:0] COUNTER = 0;
      wire w_enable; 
      
      assign w_enable = i_wr_en && (~FULL_FLAG)  ;
@@ -41,7 +41,7 @@ module wr_pointer_full_1_tx
               // w_cnt <= (w_bin_ptr>= gray_nxt) ? (w_bin_ptr-gray_nxt): (FIFO_W-(w_bin_ptr+gray_nxt));
                COUNTER <=  COUNTER + 1'b1 ;
              else
-               if (bin_wptr == 255)
+               if (bin_wptr == 511)
                COUNTER <= 0;
            end 
    
@@ -80,8 +80,8 @@ module wr_pointer_full_1_tx
  
       // assign o_full  = (bin_wptr == {~binary_wrptr[`DAT_W:`DAT_W-1] ,  binary_wrptr[`DAT_W-2:0]} ); 
        
-       assign o_full = ( COUNTER == 254 );
-       assign o_full_allmost =  (COUNTER == 252);
+       assign o_full = ( COUNTER == 510 );
+       assign o_full_allmost =  (COUNTER == 508);
         
               
        

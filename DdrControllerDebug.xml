@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<efx:project name="Test_two_design" description="" last_change="1718176852" sw_version="2023.2.307" last_run_state="crash" last_run_flow="place" config_result_in_sync="true" design_ood="sync" place_ood="" route_ood="change" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+<efx:project name="Test_two_design" description="" last_change="1723110055" sw_version="2023.2.307" last_run_state="pass" last_run_flow="bitstream" config_result_in_sync="true" design_ood="sync" place_ood="sync" route_ood="sync" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
     <efx:device_info>
         <efx:family name="Trion"/>
         <efx:device name="T120F324"/>
@@ -12,20 +12,12 @@
         <efx:design_file name="RTL_files/rd_wr_pointer_full_1_tx.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/DdrControllerDebug.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/TOP_DESIGN.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/synch_rd_pointer_1.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/connector_tx_reg.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/DdrTestStatic.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/ASYNCH_FIFO_TX.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/UART_TX_FSM.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/rd_wr_pointer_full_1.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/Ram2Axi4.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/DdrData.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/Test_two_design.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/UART_TX.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/wr_pointer_full_1_tx.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/wr_pointer_full_1.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/Top_Tx_data.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/ASYNCH_FIFO.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/synch_rd_pointer_1_tx.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/UART_FSM_REG.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/UART_Rx.v" version="default" library="default"/>
@@ -33,24 +25,34 @@
         <efx:design_file name="RTL_files/Wr_FSM.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/ParamDefine.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/UART_INTERNAL_FSM.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/read_data_test.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/sel_count.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/UART_Rx_FSM.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/Mux_8x1.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/synch_wr_pointer_1.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/DdrTest.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/stop_data.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/read_mux.v" version="default" library="default"/>
         <efx:design_file name="RTL_files/debug_top.v" version="default" library="default"/>
-        <efx:design_file name="RTL_files/BRAM_1.v" version="default" library="default"/>
+        <efx:design_file name="TX_FSM_REG.v" version="default" library="default"/>
+        <efx:design_file name="TX_INTERNAL_FSM.v" version="default" library="default"/>
+        <efx:design_file name="TOP_DESIGN_TX.v" version="default" library="default"/>
+        <efx:design_file name="UART_TRANSMITTER.v" version="default" library="default"/>
+        <efx:design_file name="WRITE_FSM_TX.v" version="default" library="default"/>
+        <efx:design_file name="TRANSMITTER_FSM.v" version="default" library="default"/>
         <efx:top_vhdl_arch name=""/>
     </efx:design_info>
     <efx:constraint_info>
+        <efx:sdc_file name="DdrControllerDebug.sdc"/>
         <efx:inter_file name=""/>
     </efx:constraint_info>
     <efx:sim_info/>
     <efx:misc_info/>
-    <efx:ip_info/>
+    <efx:ip_info>
+        <efx:ip instance_name="Asyn_fifo_1" path="ip/Asyn_fifo_1/settings.json">
+            <efx:ip_src_file name="Asyn_fifo_1.v"/>
+        </efx:ip>
+        <efx:ip instance_name="sync_fifo_store" path="ip/sync_fifo_store/settings.json">
+            <efx:ip_src_file name="sync_fifo_store.v"/>
+        </efx:ip>
+        <efx:ip instance_name="fifo_asynchronous" path="ip/fifo_asynchronous/settings.json">
+            <efx:ip_src_file name="fifo_asynchronous.v"/>
+        </efx:ip>
+    </efx:ip_info>
     <efx:synthesis tool_name="efx_map">
         <efx:param name="work_dir" value="work_syn" value_type="e_string"/>
         <efx:param name="write_efx_verilog" value="on" value_type="e_bool"/>
@@ -80,6 +82,9 @@
         <efx:param name="mult-auto-pipeline" value="0" value_type="e_option"/>
         <efx:param name="use-logic-for-small-mem" value="64" value_type="e_integer"/>
         <efx:param name="use-logic-for-small-rom" value="64" value_type="e_integer"/>
+        <efx:param name="include" value="ip/Asyn_fifo_1" value_type="e_string"/>
+        <efx:param name="include" value="ip/sync_fifo_store" value_type="e_string"/>
+        <efx:param name="include" value="ip/fifo_asynchronous" value_type="e_string"/>
     </efx:synthesis>
     <efx:place_and_route tool_name="efx_pnr">
         <efx:param name="work_dir" value="work_pnr" value_type="e_string"/>
@@ -113,7 +118,7 @@
     </efx:bitstream_generation>
     <efx:debugger>
         <efx:param name="work_dir" value="work_dbg" value_type="e_string"/>
-        <efx:param name="profile" value="NONE" value_type="e_string"/>
-        <efx:param name="auto_instantiation" value="off" value_type="e_bool"/>
+        <efx:param name="profile" value="debug_profile.wizard.json" value_type="e_string"/>
+        <efx:param name="auto_instantiation" value="on" value_type="e_bool"/>
     </efx:debugger>
 </efx:project>

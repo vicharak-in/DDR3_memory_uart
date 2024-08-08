@@ -21,8 +21,8 @@
 
 module BRAM_1_tx
 #(
-  parameter WIDTH_DATA = 48 , 
-            WIDTH_ADDR = 8 
+  parameter WIDTH_DATA = 256 , 
+            WIDTH_ADDR = 10 
 )
 (
  ///write block signals//

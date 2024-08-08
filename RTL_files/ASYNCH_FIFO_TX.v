@@ -40,8 +40,8 @@
 // 
 /////////////////////////////////////////////////////////////////////////////////////
 
-`define W_DATA 8
-`define ADDR_W 8
+`define W_DATA 256
+`define ADDR_W 10
  
  module ASYNCH_FIFO_TX(
  input i_WCLK , 

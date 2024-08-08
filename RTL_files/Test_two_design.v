@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 ///////////////////////////////////////////////////////////////////////////////////////
 `define   Test_AXI0
-`define   Efinity_Debug
+//`define   Efinity_Debug
 
 module Test_two_design  (
     input i_clk,
@@ -11,7 +11,7 @@ module Test_two_design  (
    // output R_trig,
     output RD_led ,
     output last_s_out, 
-  //  input rst,
+   // input rst,
     input trig,
     output [7:0] test_t_data,
     output [7:0] test_rd_data,
@@ -25,7 +25,8 @@ module Test_two_design  (
    // output [7:0] o_t_data,
     output [255:0] rd_data,
    // output [255:0] wr_data,
-    
+   output  DONE,
+   output DONE_OUT, 
    // output t_data ,
  //Check Resultwire
 `ifdef  Efinity_Debug  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -90,6 +91,7 @@ wire trig_en , c_data;
 wire  [ 7:0]  blen ;
 wire trig_ddr ;
 reg [7:0] blen_out = 8'h00 ;
+
 //assign blen = blen_out ;
 
 /*TOP_DESIGN
@@ -111,13 +113,13 @@ T_1(
    // input i_rst,
     .data (s_data),
     //.rst (rst),
-    .i_trig (trig),
+    .i_trig (DONE_OUT),
   //  output e_wr_flag ,
    // .rdata_fifo (wr_data),
-    .rdata_fifo (wr_data),
+    .s_out (wr_data),
     .mux_reg_data (),
     .alen_fifo(blen_out),
-    .ddr_trig(trig_ddr),
+    .trig_flag(trig_ddr),
     .wready_rx(DdrCtrl_WREADY_0),
     .trig_en (trig_en) 
     //.trig_flag (trig_en)
@@ -150,8 +152,9 @@ DdrControllerDebug
       .Ram_Wr (wr_data),
       .Ram_Rd (rd_data),
      // .read_trig (re_trig) ,
-      
-      //.rst(rst),
+      .DONE (DONE),
+      .DONE_OUT (DONE_OUT),
+      .rst(1'b1),
       .w_enable (wr_en) ,
       .rd_en (rd_enable),
      // .e_flag (e_en),
@@ -198,6 +201,7 @@ DdrControllerDebug
         .DdrCtrl_BREADY_0 (DdrCtrl_BREADY_0)  //(O)[Answer] Response Ready
 
 );
+     
 
 
 

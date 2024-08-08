@@ -457,6 +457,7 @@ module  DdrRdCtrl
   reg   DataRdReady = 1'h0;
 
   wire  DataRdEn    = DataRdReady & DataRdValid;
+  //wire  DataRdEn    = RREADY & DataRdValid;
   wire  DataRdEnd   = DataRdReady & DataRdValid & DataRdLast;
 
   /////////////////////////////////////////////////////////
@@ -519,17 +520,17 @@ module  DdrRdCtrl
   always @( posedge SysClk or negedge Reset_N)
   begin
     if (!Reset_N)             DataRdReady  <= # TCo_C 1'h0;
-    else if (DataRdReadyClr)  DataRdReady  <= # TCo_C 1'h0;
-    else if (DataRdEndReg)    DataRdReady  <= # TCo_C 1'h0;
+  //  else if (DataRdReadyClr)  DataRdReady  <= # TCo_C 1'h0;
+  //  else if (DataRdEndReg)    DataRdReady  <= # TCo_C 1'h0;
     else if (DataRdEnd  )     DataRdReady  <= # TCo_C 1'h0;
-    else if (DataRdEndFlag)   DataRdReady  <= # TCo_C 1'h0;
+  //  else if (DataRdEndFlag)   DataRdReady  <= # TCo_C 1'h0;
     else if (DataRdStart)     DataRdReady  <= # TCo_C 1'h1;
-    else if (DataRdValid)     DataRdReady  <= # TCo_C 1'h1;
+   // else if (DataRdValid)     DataRdReady  <= # TCo_C 1'h1;
   end
 
   /////////////////////////////////////////////////////////
   wire  RREADY  = DataRdReady ; //(I)[RdData]Read ready. This signal indicates that the master can accept the read data and response information.
-
+ // wire  RREADY  = 1'b1 ;
 //22222222222222222222222222222222222222222222222222222
 
 
